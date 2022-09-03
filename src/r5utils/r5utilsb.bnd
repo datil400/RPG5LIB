@@ -1,0 +1,32 @@
+strpgmexp pgmlvl(*CURRENT) signature('R5UTILS        ')
+   export symbol('r5_errno')
+   export symbol('r5_strerror')
+   export symbol('r5_errno_to_errc0100')
+   export symbol('r5_api_error_init_for_exception')
+   export symbol('r5_api_error_init_for_monitor')
+   export symbol('r5_api_error_occurred')
+   export symbol('r5_joblog')
+   export symbol('r5_this')
+   export symbol('r5_caller')
+   export symbol('r5_trigger_caller')
+   export symbol( 'r5_iif_char' )
+   export symbol( 'r5_iif_dec' )
+   export symbol( 'r5_iif_int' )
+   export symbol( 'r5_iif_date' )
+   export symbol( 'r5_iif_time' )
+   export symbol( 'r5_iif_timestamp' )
+   export symbol( 'r5_min' )
+   export symbol( 'r5_max' )
+   export symbol( 'r5_random_number' )
+
+/* export symbol('r5_cleanupNum')        */
+
+/* export symbol('r5_check_object')      */
+/* export symbol('r5_check_member')      */
+/* export symbol('r5_parse_object_name') */
+
+/* export symbol('r5_in')                */
+
+/* export symbol('r5_text_box')          */
+
+EndPgmExp
