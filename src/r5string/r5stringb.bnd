@@ -1,0 +1,12 @@
+strpgmexp pgmlvl(*CURRENT) signature('R5STRING        ')
+   export symbol('r5_left')
+   export symbol('r5_right')
+   export symbol('r5_mid')
+   export symbol('r5_convert_case')
+   export symbol('r5_to_upper')
+   export symbol('r5_to_lower')
+   export symbol('r5_buffer_to_varlen')
+   export symbol('r5_varlen_to_buffer')
+   export symbol('r5_char_to_dec')
+endpgmexp
+
