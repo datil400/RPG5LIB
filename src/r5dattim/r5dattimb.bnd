@@ -32,5 +32,13 @@ strpgmexp pgmlvl(*CURRENT) signature('R5DATTIM        ')
    export symbol('r5_begin_of_quarter')
    export symbol('r5_end_of_quarter')
    export symbol('r5_quarter')
+   export symbol('r5_timestamp_to_decdate')
+   export symbol('r5_decdate_to_timestamp')
+   export symbol('r5_time_to_dec')
+   export symbol('r5_dec_to_time')
+   export symbol('r5_micro_timestamp')
+   export symbol('r5_make_time')
+   export symbol('r5_timestamp_to_unix_time')
+   export symbol('r5_unix_time_to_timestamp')
 endpgmexp
 
