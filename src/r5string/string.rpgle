@@ -19,11 +19,11 @@ ctl-opt option(*SRCSTMT: *NODEBUGIO);
 ctl-opt bnddir('RPG5LIB');
 
 
-/COPY UMISC_H
 /COPY API,NLS_H
 /COPY API,MIH_H
 
-/COPY RPG5LIB,types_h
+/COPY RPG5LIB,apierror_h
+/COPY RPG5LIB,math_h
 /COPY RPG5LIB,string_h
 
 
@@ -46,7 +46,7 @@ dcl-proc r5_left export;
       return  '';
    endif;
 
-   return  %subst(string: 1: %int(min(%len(string): length)));
+   return  %subst(string: 1: %int(r5_min(%len(string): length)));
 end-proc;
 
 
@@ -70,8 +70,8 @@ dcl-proc r5_right export;
    endif;
 
    return %subst( string
-                : %int(max(%len(string): length) - length + 1)
-                : %int(min(%len(string): length))
+                : %int(r5_max(%len(string): length) - length + 1)
+                : %int(r5_min(%len(string): length))
                 );
 end-proc;
 
@@ -122,7 +122,7 @@ dcl-proc r5_mid export;
    endif;
 
    return %subst( string
-                : %int(min(start: %len(string)))
+                : %int(r5_min(start: %len(string)))
                 : length
                 );
 end-proc;
@@ -145,9 +145,9 @@ end-proc;
 dcl-proc r5_convert_case export;
 
    dcl-pi *N;
-      in_string like(TypeBuffer2) options(*VARSIZE) const;
+      in_string like(r5_buffer_t) options(*VARSIZE) const;
       in_str_size like(r5_int_t) const;
-      out_string like(TypeBuffer2) options(*VARSIZE);
+      out_string like(r5_buffer_t) options(*VARSIZE);
       out_str_size like(r5_int_t) const;
       o_option like(r5_int_t) options(*NOPASS) const;
       o_ccsid like(r5_int_t) options(*NOPASS) const;
@@ -158,16 +158,9 @@ dcl-proc r5_convert_case export;
    dcl-s min_length like(r5_int_t);
 
 
-   // Si no se indica el tamaño de la cadena de entrada ni
-   // la de destino no es necesario realizar la conversión
-   // ni ninguna otra cosa.
-
    if in_str_size <= 0 or out_str_size <= 0;
       return;
    endif;
-
-   // Si la cadena de entrada sólo contiene blancos, no hay
-   // conversión, se devuelven los mismos blancos.
 
    if %subst(in_string: 1: in_str_size) = *BLANKS;
       %subst(out_string: 1: out_str_size) = *BLANKS;
@@ -187,12 +180,13 @@ dcl-proc r5_convert_case export;
    if %parms() >= %parmnum(o_option);
       rcb.caseReq = o_option;
    else;
-      rcb.caseReq = STR_TO_UPPER;
+      rcb.caseReq = R5_STR_TO_UPPER;
    endif;
 
-   min_length = min(in_str_size: out_str_size);
+   min_length = r5_min(in_str_size: out_str_size);
 
-   clear  error;
+   //clear  error;
+   r5_api_error_init_for_exception(error);
    QlgConvertCase( rcb
                  : %subst(in_string: 1: min_length)
                  : out_string
@@ -218,7 +212,7 @@ dcl-proc r5_to_upper export;
    dcl-s ccsid like(o_ccsid);
    dcl-s out_str like(string);
    dcl-s out_str_len like(r5_short_t) based(out_str_len_ptr);
-   dcl-s buffer like(TypeBuffer) based(buffer_ptr);
+   dcl-s buffer like(r5_buffer_t) based(buffer_ptr);
 
 
    if %parms() >= %parmnum(o_ccsid);
@@ -227,12 +221,12 @@ dcl-proc r5_to_upper export;
       ccsid = 0;
    Endif;
 
-   out_str_len_ptr = %addr(out_str);        // Two bytes of string length
+   out_str_len_ptr = %addr(out_str);        // Two bytes for string length
    buffer_ptr = out_str_len_ptr + %size(out_str_len); // The data
    out_str_len = %len(string);
    r5_convert_case( string: %len(string)
                   : buffer: %len(string)
-                  : STR_TO_UPPER
+                  : R5_STR_TO_UPPER
                   : ccsid
                   );
    return out_str;
@@ -251,7 +245,7 @@ dcl-proc r5_to_lower export;
    dcl-s ccsid like(o_ccsid);
    dcl-s out_str like(string);
    dcl-s out_str_len like(r5_short_t) based(out_str_len_ptr);
-   dcl-s buffer like(TypeBuffer) based(buffer_ptr);
+   dcl-s buffer like(r5_buffer_t) based(buffer_ptr);
 
 
    if %parms() >= %parmnum(o_ccsid);
@@ -260,12 +254,12 @@ dcl-proc r5_to_lower export;
       ccsid = 0;
    Endif;
 
-   out_str_len_ptr = %addr(out_str);        // Two bytes of string length
+   out_str_len_ptr = %addr(out_str);        // Two bytes for string length
    buffer_ptr = out_str_len_ptr + %size(out_str_len); // The data
    out_str_len = %len(string);
    r5_convert_case( string: %len(string)
                   : buffer: %len(string)
-                  : STR_TO_LOWER
+                  : R5_STR_TO_LOWER
                   : ccsid
                   );
    return out_str;
@@ -288,12 +282,12 @@ end-proc;
 
 dcl-proc r5_buffer_to_varlen export;
 
-   dcl-pi *N like(TypeVarBuffer);
-      buffer like(TypeBuffer) options(*VARSIZE) const;
+   dcl-pi *N like(r5_var_buffer_t);
+      buffer like(r5_buffer_t) options(*VARSIZE) const;
       size like(r5_int_t) const;
    end-pi;
 
-   dcl-s varlen like(TypeVarBuffer) inz('');
+   dcl-s varlen like(r5_var_buffer_t) inz('');
 
    if size <= 0;
       return  '';
@@ -322,8 +316,8 @@ end-proc;
 dcl-proc r5_varlen_to_buffer export;
 
    dcl-pi *N;
-     varlen like(TypeVarBuffer) options(*VARSIZE) const;
-     buffer like(TypeBuffer) Options(*VARSIZE);
+     varlen like(r5_var_buffer_t) options(*VARSIZE) const;
+     buffer like(r5_buffer_t) Options(*VARSIZE);
      size like(r5_int_t) const;
    end-pi;
 
@@ -336,9 +330,6 @@ dcl-proc r5_varlen_to_buffer export;
 end-proc;
 
 
-//  Transforma una cadena de caracteres con un número en un
-//  número decimal empaquetado.
-//
 //  Transforma un número contenido en una cadena de caractares
 //  en un número decimal empaquetado.
 //
