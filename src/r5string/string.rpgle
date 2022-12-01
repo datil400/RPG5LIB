@@ -27,8 +27,10 @@ ctl-opt bnddir('RPG5LIB');
 /COPY RPG5LIB,string_h
 
 
-//  Extrae un número de caracteres de una cadena comenzando
-//  por la izquierda.
+dcl-c JOB_CCSID  0;
+
+
+//  Extrae una subcadena comenzando por la izquierda.
 //
 //  Si 'length' es cero, devuelve una cadena vacía.
 //
@@ -50,8 +52,7 @@ dcl-proc r5_left export;
 end-proc;
 
 
-//  Extrae un número de caracteres de una cadena comenzando
-//  por la derecha.
+//  Extrae una subcadena comenzando por la derrecha.
 //
 //  Si 'length' es cero, devuelve una cadena vacía.
 //
@@ -78,17 +79,13 @@ end-proc;
 
 //  Extrae una subcadena de longitud 'o_length' comenzando en 'start'.
 //
-//  Esta función es muy similar a %Substr().
+//  Esta función es muy similar a %substr().
 //
-//  Si 'start' es mayor que la cadena, devuelve una cadena vacía.
+//  Si 'start' es mayor que la longitud de la cadena, devuelve una subcadena
+//  vacía.
 //
 //  Si 'o_length' se omite o es cero, se devuelve una subcadena que
 //  comienza en 'start' hasta el final de la cadena.
-//
-//  Exception:
-//
-//  RNX0100  La longitud o posición de inicio está fuera de rango
-//           para la operación de serie.
 
 dcl-proc r5_mid export;
 
@@ -130,17 +127,16 @@ end-proc;
 
 //  Convertir a mayúsculas o minúsculas una cadena de caracteres.
 //
-//  in_string  Expresión de tipo cadena para convertir a
-//             mayúsculas/minúsculas.
-//  in_str_size  Tamaño en bytes de la cadena de entrada.
-//  out_str      Cadena que recibirá la cadana convertida.
-//  out_str_size  Tamaño en bytes de la variable que recibirá
-//                la cadena convertida.
-//  o_option     Tipo de conversión:
+//  'in_string' es la cadena a convertir.
+//  'in_str_size' es el tamaño en bytes de la cadena de entrada.
+//  'out_str' recibe la cadena convertida.
+//  'out_str_size' es el tamaño en bytes de la variable que
+//  recibirá la cadena convertida.
+//  'o_option' indica el tipo de conversión:
 //                 0 = a mayúsculas (valor por defecto)
 //                 1 = a minúsculas
-//  o_ccsid      Identificador del juego de caracteres con
-//               el que está codificada la cadena 'inStr'.
+//  'o_ccsid' es el identificador del juego de caracteres con
+//  el que está codificada la cadena de entrada.
 
 dcl-proc r5_convert_case export;
 
@@ -174,7 +170,7 @@ dcl-proc r5_convert_case export;
    if %parms() >= %parmnum(o_ccsid);
       rcb.ccsid   = o_ccsid;
    else;
-      rcb.ccsid   = 0;         // Usar el CCSID del trabajo
+      rcb.ccsid   = JOB_CCSID;
    endif;
 
    if %parms() >= %parmnum(o_option);
@@ -185,7 +181,6 @@ dcl-proc r5_convert_case export;
 
    min_length = r5_min(in_str_size: out_str_size);
 
-   //clear  error;
    r5_api_error_init_for_exception(error);
    QlgConvertCase( rcb
                  : %subst(in_string: 1: min_length)
@@ -217,9 +212,9 @@ dcl-proc r5_to_upper export;
 
    if %parms() >= %parmnum(o_ccsid);
       ccsid = o_ccsid;
-   Else;
-      ccsid = 0;
-   Endif;
+   else;
+      ccsid = JOB_CCSID;
+   endif;
 
    out_str_len_ptr = %addr(out_str);        // Two bytes for string length
    buffer_ptr = out_str_len_ptr + %size(out_str_len); // The data
@@ -250,9 +245,9 @@ dcl-proc r5_to_lower export;
 
    if %parms() >= %parmnum(o_ccsid);
       ccsid = o_ccsid;
-   Else;
-      ccsid = 0;
-   Endif;
+   else;
+      ccsid = JOB_CCSID;
+   endif;
 
    out_str_len_ptr = %addr(out_str);        // Two bytes for string length
    buffer_ptr = out_str_len_ptr + %size(out_str_len); // The data
@@ -317,7 +312,7 @@ dcl-proc r5_varlen_to_buffer export;
 
    dcl-pi *N;
      varlen like(r5_var_buffer_t) options(*VARSIZE) const;
-     buffer like(r5_buffer_t) Options(*VARSIZE);
+     buffer like(r5_buffer_t) options(*VARSIZE);
      size like(r5_int_t) const;
    end-pi;
 
@@ -333,16 +328,21 @@ end-proc;
 //  Transforma un número contenido en una cadena de caractares
 //  en un número decimal empaquetado.
 //
-//  string  La cadena de caracteres con el número.
-//          Permite blancos al principio y final,
-//          signos (+/-), moneda, separadores de
-//          millar y coma decimal.
-//  o_mask  Símbolos permitidos, según:
+//  'string' es la cadena de caracteres con el número. Se permiten
+//  blancos al principio y final, signos (+/-), moneda, separadores
+//  de millar y coma decimal.
+//
+//  'o_mask' especifica los símbolos permitidos, según:
 //            1. Síbolo de moneda (p.e. $)
 //            2. Separador de millar
 //            3. Coma decimal
-//          Optativo.
-//          Por defecto: ' .,' para España
+//
+//  Por defecto: ' .,' para España
+//
+//  Developer:
+//
+//    Se podría utilizar los LOCALE o los atributos del trabajo para
+//    fijar un valor por defecto a 'mask'.
 //
 //  Excepciones:
 //
