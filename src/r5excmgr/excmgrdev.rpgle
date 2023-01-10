@@ -10,13 +10,13 @@
 /COPY RPG5LIB,types_h
 
 
-/IF NOT DEFINED(R5_SPANISH_DEFS)
-/IF NOT DEFINED(R5_ENGLISH_DEFS)
-/DEFINE R5_SPANISH_DEFS
+/IF NOT DEFINED(R5_EXCMGR_SPANISH_ERRORS)
+/IF NOT DEFINED(R5_EXCMGR_ENGLISH_ERRORS)
+/DEFINE R5_EXCMGR_SPANISH_ERRORS
 /ENDIF
 /ENDIF
 
-/IF DEFINED(R5_SPANISH_DEFS)
+/IF DEFINED(R5_EXCMGR_SPANISH_ERRORS)
 
 dcl-c UNEXPECTED_ERROR  'Error inesperado, revise los mensajes anteriores.';
 dcl-c INTERNAL_ERROR  'Se produjo un error interno inesperado.';
@@ -28,15 +28,30 @@ dcl-c TARGET_INVOCATION_ERROR  'Nivel de llamada incorrecto.';
 dcl-c EMPTY_CALL_STACK_ERROR  'No hay entradas en la pila de llamadas.';
 dcl-c NOT_PARSED_CALL_STACK_ERROR  'No se ha analizado la pila de llamadas.';
 dcl-c MISSING_CALL_STACK_ERROR  'La pila de llamadas no está disponible.';
-dcl-c UNDEFINED_TOP_OF_CALL_STACK_ERROR  'La cima de la pila no está definida';
-dcl-c INVALID_CALL_STACK_ENTRY_ERROR  'No es una entrada válida';
-
-/ELSEIF DEFINED(R5_ENGLISH_DEFS)
-/ENDIF
+dcl-c UNDEFINED_TOP_OF_CALL_STACK_ERROR  'La cima de la pila no está definida.';
+dcl-c INVALID_CALL_STACK_ENTRY_ERROR  'No es una entrada válida de la pila de llamadas.';
 
 // Información no está disponible
 // No se ha atrapado ninguna excepción
 // Se intentó atrapar una excepción que no existe
+
+/ELSEIF DEFINED(R5_EXCMGR_ENGLISH_ERRORS)
+
+dcl-c UNEXPECTED_ERROR  '';
+dcl-c INTERNAL_ERROR  '';
+dcl-c NULL_REFERENCE_ERROR  '';
+dcl-c NULL_ARGUMENT_ERROR  '';
+dcl-c NULL_POINTER_ERROR  '';
+
+dcl-c TARGET_INVOCATION_ERROR  '';
+dcl-c EMPTY_CALL_STACK_ERROR  '';
+dcl-c NOT_PARSED_CALL_STACK_ERROR  '';
+dcl-c MISSING_CALL_STACK_ERROR  '';
+dcl-c UNDEFINED_TOP_OF_CALL_STACK_ERROR  '';
+dcl-c INVALID_CALL_STACK_ENTRY_ERROR  '';
+
+/ENDIF
+
 
 
 dcl-ds call_stack_entry_t align(*FULL) qualified template;

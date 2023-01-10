@@ -391,7 +391,7 @@ end-proc;
 
 dcl-proc send_exception_to_call_level;
 
-   dcl-pi *N opdesc extproc(*DCLCASE);
+   dcl-pi *N extproc(*DCLCASE);
       exception like(r5_object_t) value;
       target_entry like(int4_t) value;
    end-pi;
