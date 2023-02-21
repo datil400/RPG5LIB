@@ -616,6 +616,28 @@
 
 
     /**
+     *  Comprueba si una cadena de caracteres es una fecha correcta.
+     *
+     *  'char_format' define el formato de la fecha que se comprueba.
+     *
+     *    Para los formatos válidos consultar la documentación de la
+     *    función 'r5_char_to_date'.
+     */
+
+     P r5_check_char_date...
+     P                 B                   export
+     D                 PI                  like(r5_boolean_t)
+     D   char_date                         like(r5_long_char_date_t) const
+     D   char_format                       like(r5_long_date_format_t) const
+
+       callp(e) r5_char_to_date(char_date: char_format);
+       return (not %error());
+
+     P r5_check_char_date...
+     P                 E
+
+
+    /**
      *  Convierte una cadena de caracteres en una fecha.
      *
      *  La fecha puede expresarse en diferentes formatos que deberán ser

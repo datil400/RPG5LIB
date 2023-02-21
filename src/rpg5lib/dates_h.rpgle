@@ -137,6 +137,12 @@
      D   dec_format                        like(r5_date_format_t) const
      D                                     options(*TRIM)
 
+     D r5_check_char_date...
+     D                 PR                  like(r5_boolean_t)
+     D                                     extproc('r5_check_char_date')
+     D   char_date                         like(r5_long_char_date_t) const
+     D   char_format                       like(r5_long_date_format_t) const
+
      D r5_check_date_format...
      D                 PR                  like(r5_boolean_t)
      D                                     extproc('r5_check_date_format')
