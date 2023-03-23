@@ -70,4 +70,6 @@ strpgmexp pgmlvl(*CURRENT) signature('R5EXCMGR        ')
    export symbol('r5_call_stack_entry_is_program')
    export symbol('r5_call_stack_entry_is_service_program')
 
+   export symbol('r5_exception_new_from_text')
+   export symbol('r5_exception_new_from_errno')
 endpgmexp

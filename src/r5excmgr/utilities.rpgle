@@ -6,7 +6,7 @@
 //
 //  Exception manager utilities
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : June 2021
 //
 //  Compiling : R5EXCMGRI
@@ -167,9 +167,9 @@ end-proc;
 
 //  Devuelve el valor más pequeño de la lista.
 //
-//  Inspirado en un procedimiento similar publicado por Bob Cozzi.
-
-// CANDIDATO A EXTERNALIZAR
+//  A partir de versión 7.2 TR6 y 7.3 TR2 existe la función incorporada %min()
+//
+//  Por compatibilidad con versiones anteriores se mantiene esta función.
 
 dcl-proc min export;
 

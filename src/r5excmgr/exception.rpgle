@@ -6,7 +6,7 @@
 //
 //  Exception object
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : June 2021
 //
 //  Compiling : R5EXCMGRI
@@ -22,6 +22,7 @@
 
 ctl-opt nomain;
 ctl-opt option(*SRCSTMT: *NODEBUGIO);
+
 
 /COPY API,ceeproc_h
 /COPY RPG5LIB,c_lib_h
@@ -44,7 +45,30 @@ dcl-ds exception_t qualified template;
    // CHAR(*)  Here the message data
 end-ds;
 
-dcl-s r5_exception_data_t like(r5_message_data_t) template;
+dcl-s exception_data_t like(r5_message_data_t) template;
+
+
+dcl-proc r5_exception_new_from_text export;
+
+   dcl-pi *N like(r5_object_t);
+      text like(r5_small_varchar_t) options(*TRIM) const;
+   end-pi;
+
+   return r5_exception_new('CPF9898': 'QCPFMSG': text);
+end-proc;
+
+
+dcl-proc r5_exception_new_from_errno export;
+
+   dcl-pi *N like(r5_object_t);
+      errno like(r5_errno_t) const;
+   end-pi;
+
+   dcl-s msg_id like(r5_message_id_t);
+
+   msg_id = r5_errno_to_msg_id(errno);
+   return r5_exception_new(msg_id: 'QCPFMSG');
+end-proc;
 
 
 dcl-proc r5_exception_new export;
@@ -56,7 +80,7 @@ dcl-proc r5_exception_new export;
    end-pi;
 
    dcl-ds ex likeds(exception_t) based(self);
-   dcl-s ex_data like(r5_exception_data_t) based(ex_data_ptr);
+   dcl-s ex_data like(exception_data_t) based(ex_data_ptr);
 
    dcl-s size like(r5_int_t);
    dcl-s msg_data_size like(r5_int_t);
@@ -141,7 +165,7 @@ dcl-proc r5_exception_message_data export;
    end-pi;
 
    dcl-ds ex likeds(exception_t) based(self);
-   dcl-s ex_data like(r5_exception_data_t) based(ex_data_ptr);
+   dcl-s ex_data like(exception_data_t) based(ex_data_ptr);
 
 
    crash_if(self = *NULL: NULL_REFERENCE_ERROR);
