@@ -43,6 +43,11 @@ dcl-s r5_varchar_t varchar(1024) template;
 dcl-s r5_var_string_t varchar(1024) template;
 dcl-s r5_string_t varchar(2048) template;
 
+dcl-s r5_small_string_t varchar(256) template;
+dcl-s r5_short_string_t varchar(512) template;
+//dcl-s r5_string_t varchar(1024) template;
+dcl-s r5_long_string_t varchar(2048) template;
+
 dcl-s r5_pointer_t pointer template;
 dcl-s r5_proc_pointer_t pointer(*PROC) template;
 
