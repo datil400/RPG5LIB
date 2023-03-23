@@ -6,8 +6,8 @@
 //
 //  Exception manager
 //
-//  Author : Javier Mora
-//  Date   : Junio 2021
+//  Author : datil400@gmail.com
+//  Date   : June 2021
 //
 //  Compiling : R5EXCMGRI
 //
@@ -26,14 +26,20 @@
 //
 //    on-error;
 //       r5_catch();
+//
+//       // aquí el manejador
 //    endmon;
+//
+//  o de esta otra forma:
 //
 //    callp(e) hacer_algo();
 //    if %error();
 //       r5_catch();
+//
+//       // aquí el manejador
 //    endif;
 //
-//  La operación de lanzar (trhow) y atrapar (catch) una excepción implica
+//  La operación de lanzar (throw) y atrapar (catch) una excepción implica
 //  examinar la cadena de llamadas para encontrar un manejador de la
 //  excepción.
 //
@@ -44,8 +50,8 @@
 //
 //    dcl-s ex like(r5_object_t);
 //
-//    ex = r5_exception_new('CPF9897': 'QCPFMSG   QSYS': 'Datos mensaje');
-//    r5_trhow(ex);
+//    ex = r5_exception_new('CPF9897': 'QCPFMSG   QSYS': 'Datos de la excepción');
+//    r5_throw(ex);
 //
 //  Este gestor de excepciones se sustenta en dos procedimientos:
 //  'send_exception_to_call_level' y 'r5_catch'. Ambos intentan simular en RPG
@@ -75,9 +81,7 @@
 //  consultar la última excepción atrapada.
 //
 //  Además, este gestor de excepciones proporciona otras funciones de
-//  utilidad como la consulta de la última excepción atrapada o relacionadas
-//  con el uso de la pila de llamadas (entre muchas otras). Consulte la
-//  interfaz del programa de servicio para más información.
+//  utilidad como las relacionadas con el uso de la pila de llamadas.
 //
 //  Developer
 //
@@ -133,7 +137,7 @@ end-ds;
 
 
 //  Lanza una excepción e interrumpe la ejecución del procedimiento llamador.
-//  Si no se indica 'exception', se vuelve a relanzar la última excepción
+//  Si no se indica 'exception', se vuelve a lanzar la última excepción
 //  atrapada.
 
 dcl-proc r5_throw export;
@@ -171,7 +175,7 @@ end-proc;
 
 //  Busca la llamada dinámica a programa más cercana y lanza una excepción
 //  al nivel de llamada anterior a esa llamada.
-//  Si no se indica 'exception', se vuelve a relanzar la última excepción
+//  Si no se indica 'exception', se vuelve a lanzar la última excepción
 //  atrapada.
 
 dcl-proc r5_throw_to_calling_program export;
@@ -198,13 +202,12 @@ end-proc;
 //  Comprueba el área de comunicaciones SQL (SQLCA) de la última sentencia
 //  ejecutada.
 //
-//  En las anotaciones del trabajo queda registrado un mensaje informativo
-//  del aviso o error producido.
+//  Devuelve *ON si finalizó correctamente la sentencia SQL. En una
+//  sentencia SELECT se dá por bueno la lectura parcial de los datos o
+//  errores de correlación.
 //
-//  Valor de retorno:
-//
-//    *ON si finalizó correctamente la sentencia SQL.
-//    *OFF si no se recuperaron datos en la sentencia SQL.
+//  Devuelve *OFF si no se recuperaron datos en la sentencia SQL. Equivale
+//  al '%eof' en una lectura de E/S nativa.
 //
 //  En cualquier otro caso se lanza una excepción 'SQxaaaa', donde el valor
 //  de 'xaaaa' equivale a SQLCOD.
@@ -222,6 +225,7 @@ dcl-proc r5_check_sql_state export;
    select;
 
    // Finalización correcta de la setencia SQL:
+   //
    // 00000 = Ejecución satisfactoria y no se produjo ningún tipo de
    //         condición de aviso o de excepción.
    // 01nnn = Se realizó una lectura de datos, pero la sentencia SQL
@@ -258,17 +262,17 @@ dcl-proc sqlca_to_exception;
    end-pi;
 
    dcl-s ex like(r5_object_t);
-   dcl-s sqlMsgId like(r5_message_id_t);
+   dcl-s sql_msg_id like(r5_message_id_t);
 
 
-   sqlMsgId = sqlcode_to_msg_id(sqlca.sqlcode);
+   sql_msg_id = sqlcode_to_msg_id(sqlca.sqlcode);
 
    if sqlca.sqlerrml > 0;
-      ex = r5_exception_new( sqlMsgId: 'QSQLMSG   *LIBL'
+      ex = r5_exception_new( sql_msg_id: 'QSQLMSG   *LIBL'
                            : %subst(sqlca.sqlerrmc: 1: sqlca.sqlerrml)
                            );
    else;
-      ex = r5_exception_new(sqlMsgId: 'QSQLMSG   *LIBL');
+      ex = r5_exception_new(sql_msg_id: 'QSQLMSG   *LIBL');
    endif;
 
    return ex;
@@ -466,7 +470,7 @@ dcl-proc save_exception_info;
    end-pi;
 
    dcl-c IGNORE_ENTRIES  3;
-     // trhower + send_exception_to... + save_exception_info invocatios
+     // thrower + send_exception_to... + save_exception_info invocatios
 
    dcl-s stack like(r5_object_t);
 

@@ -6,7 +6,7 @@
 //
 //  Call stack.
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : June 2021
 //
 //  Compiling : R5EXCMGRI
@@ -14,7 +14,7 @@
 //  Comments
 //
 //    Representa una instantánea de la pila de llamadas de un determinado trabajo en
-//   un momento dado.
+//    un momento dado.
 //
 //  Developer
 //
@@ -28,6 +28,7 @@
 ctl-opt nomain;
 ctl-opt option(*SRCSTMT: *NODEBUGIO);
 
+
 /COPY RPG5LIB,joblog_h
 /COPY RPG5LIB,apierror_h
 /COPY RPG5LIB,c_lib_h
@@ -35,6 +36,9 @@ ctl-opt option(*SRCSTMT: *NODEBUGIO);
 /COPY RPG5LIB,callstke_h
 /COPY R5EXCMGR,excmgrdev
 
+
+// Número máximo de entradas de la pila de llamadas que
+// se pueden inspeccionar
 
 dcl-c MAX_ENTRIES  1024;     // Esta es una limitación importante
 
@@ -59,7 +63,7 @@ dcl-proc r5_call_stack_get_from_current_job export;
       o_skip_entries like(r5_int_t) options(*NOPASS) const;
    end-pi;
 
-   dcl-c IGNORE_THIS_ENTRY 1;
+   dcl-c IGNORE_THIS_ENTRY  1;
 
    dcl-s self like(r5_object_t);
    dcl-s skip_entries like(o_skip_entries);
@@ -106,6 +110,7 @@ dcl-proc r5_call_stack_get_from_job export;
    end-pi;
 
    dcl-c IGNORE_ENTRIES 2;
+      // r5_call_stack_get_from_job + retrieve_call_stack
 
    dcl-s skip_entries like(o_skip_entries);
    dcl-s self like(r5_object_t);

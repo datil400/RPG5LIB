@@ -19,6 +19,15 @@
 //  /COPY RPG5LIB,exceptionh
 
 /COPY RPG5LIB,types_h
+/COPY RPG5LIB,errno_h
+
+dcl-pr r5_exception_new_from_text like(r5_object_t) extproc(*DCLCASE);
+   text like(r5_small_varchar_t) options(*TRIM) const;
+end-pr;
+
+dcl-pr r5_exception_new_from_errno like(r5_object_t) extproc(*DCLCASE);
+   errno like(r5_errno_t) const;
+end-pr;
 
 dcl-pr r5_exception_new like(r5_object_t) opdesc extproc(*DCLCASE);
    msg_id like(r5_message_id_t) const;
