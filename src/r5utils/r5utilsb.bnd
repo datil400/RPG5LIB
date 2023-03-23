@@ -18,15 +18,9 @@ strpgmexp pgmlvl(*CURRENT) signature('R5UTILS        ')
    export symbol('r5_min')
    export symbol('r5_max')
    export symbol('r5_random_number')
-
-/* export symbol('r5_cleanupNum')        */
-
-/* export symbol('r5_check_object')      */
-/* export symbol('r5_check_member')      */
-/* export symbol('r5_parse_object_name') */
+   export symbol('r5_errno_to_msg_id')
+   export symbol('r5_cube_root')
 
 /* export symbol('r5_in')                */
-
-/* export symbol('r5_text_box')          */
 
 EndPgmExp

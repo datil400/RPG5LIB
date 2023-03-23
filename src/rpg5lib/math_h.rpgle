@@ -61,3 +61,8 @@ dcl-pr r5_random_number like(r5_int_t) extproc(*DCLCASE);
    high_nbr like(r5_int_t) const;
    o_low_nbr like(r5_int_t) options(*NOPASS) const;
 end-pr;
+
+dcl-pr r5_cube_root like(r5_double_t) extproc(*DCLCASE);
+   value like(r5_double_t) const;
+end-pr;
+

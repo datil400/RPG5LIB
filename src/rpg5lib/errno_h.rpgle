@@ -20,11 +20,20 @@
 
 /COPY RPG5LIB,types_h
 
-dcl-pr r5_errno like(r5_int_t) extproc(*DCLCASE) end-pr;
+dcl-s r5_errno_t like(r5_int_t) template;
+
+
+dcl-pr r5_errno like(r5_errno_t) extproc(*DCLCASE) end-pr;
 
 dcl-pr r5_strerror like(r5_var_string_t) extproc(*DCLCASE);
-   errno like(r5_int_t) value;
+   errno like(r5_errno_t) value;
 end-pr;
 
-dcl-pr r5_errno_to_errc0100 likeds(ERRC0100_T) extproc(*DCLCASE) end-pr;
+dcl-pr r5_errno_to_errc0100 likeds(ERRC0100_T) extproc(*DCLCASE);
+   o_errno like(r5_errno_t) options(*NOPASS) const;
+end-pr;
+
+dcl-pr r5_errno_to_msg_id like(r5_message_id_t) extproc(*DCLCASE);
+   o_errno like(r5_errno_t) options(*NOPASS) const;
+end-pr;
 

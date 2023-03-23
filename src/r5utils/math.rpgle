@@ -237,3 +237,18 @@ dcl-proc r5_random_number export;
    CEERAN0(seed: rand: *OMIT);
    return (%int(rand * range ) + low_nbr);
 end-proc;
+
+
+dcl-proc r5_cube_root export;
+
+   dcl-pi *N like(r5_double_t);
+      value like(r5_double_t) const;
+   end-pi;
+
+   if value < 0.0;
+      return -(-value ** (1/3));
+   else;
+      return (value ** (1/3));
+   endif;
+end-proc;
+
