@@ -4,7 +4,7 @@
 //  SrvPgm  : R5UTILS
 //  Module  : IIF
 //
-//  r5_iif_* family functions
+//  Family of 'iif' functions
 //
 //  Author : Javier Mora
 //  Date   : April 2022

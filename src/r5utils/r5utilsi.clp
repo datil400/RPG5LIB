@@ -123,13 +123,15 @@ DCL        VAR(&OVRSRCFILE) TYPE(*CHAR) LEN(10)
                           SRCFILE(&LIB/&RPGLESRC) DBGVIEW(&DBG)
              CRTRPGMOD  MODULE(QTEMP/MATH) SRCFILE(&LIB/&RPGLESRC) +
                           DBGVIEW(&DBG)
+             CRTRPGMOD  MODULE(QTEMP/IN) SRCFILE(&LIB/&RPGLESRC) +
+                          DBGVIEW(&DBG)
              RTVMBRD    FILE(&LIB/&RPGLESRC) MBR(R5UTILSB) TEXT(&TEXT)
              CRTSRVPGM  SRVPGM(&LIB/R5UTILS) MODULE(QTEMP/ERRNO +
                           QTEMP/APIERROR QTEMP/JOBLOG +
                           QTEMP/CALLLEVEL QTEMP/WHO_AM_I QTEMP/IIF +
-                          QTEMP/MATH) +
+                          QTEMP/MATH QTEMP/IN) +
                           SRCFILE(&LIB/&SRVSRC) SRCMBR(R5UTILSB) +
-                          TEXT('RPG5LIB Utilities') ACTGRP(*CALLER)
+                          TEXT(&TEXT) ACTGRP(*CALLER)
 
    SNDPGMMSG  MSG('Se ha creado el programa de servicio R5UTILS.') +
               MSGTYPE(*COMP)
