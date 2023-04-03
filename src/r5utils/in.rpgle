@@ -13,6 +13,15 @@
 //
 //  Comments
 //
+//    La implementación de estas funciones está inspirada en la
+//    propuesta de Rory Hewit de utilizar la intstrucción de la
+//    interfaz de máquina NPMPARMLISTADDR para recorrer la lista
+//    de parámetros.
+//
+//    Implementing an IN-Type Procedure in RPG
+//    Sistem iNetwork, December 2011
+//
+//    Nota: este artículo no se encuentra accesible actualmente.
 
 
 ctl-opt nomain;
