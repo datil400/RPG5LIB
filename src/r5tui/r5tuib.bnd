@@ -25,4 +25,6 @@ strpgmexp pgmlvl(*CURRENT) signature('R5TUI          ')
    export symbol('r5_dspatr_is_non_displayable')
    export symbol('r5_dspatr_set_protected_field')
    export symbol('r5_dspatr_is_protected_field')
+
+   export symbol('r5_text_box')
 endpgmexp

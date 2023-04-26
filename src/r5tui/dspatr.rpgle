@@ -6,7 +6,7 @@
 //
 //  Display attributes P-field (DSPATR DDS keyword)
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : December 2022
 //
 //  Compiling : R5TUII
