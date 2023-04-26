@@ -63,6 +63,7 @@ dcl-s r5_size_t uns(10) template;
 
 dcl-s r5_varname_t like(TypeVarName) template;
 dcl-s r5_name_t like(TypeName) template;
+dcl-ds r5_qualified_name_t likeds(TypeQualName) template;
 
 dcl-ds r5_qualified_job_t qualified template;
    name like(r5_name_t);
@@ -74,6 +75,11 @@ dcl-s r5_message_id_t char(7) template;
 dcl-ds r5_message_file_t likeds(TypeQualName) template;
 dcl-s r5_message_data_t char(2048) template;
 dcl-s r5_message_key_t char(4) template;
+
+dcl-ds r5_qualified_msg_id_t qualified template;
+   id like(r5_message_id_t);
+   file likeds(r5_message_file_t);
+end-ds;
 
 dcl-s r5_program_name_t varchar(10) template;
 dcl-s r5_module_name_t varchar(10) template;

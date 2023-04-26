@@ -1,0 +1,8 @@
+/* OPERATING SYSTEM FACILITIES */
+
+strpgmexp pgmlvl(*CURRENT) signature('R5SYS          ')
+   export symbol('r5_parse_object_name')
+   export symbol('r5_check_object')
+   export symbol('r5_check_member')
+   export symbol('r5_get_system_value')
+endpgmexp
