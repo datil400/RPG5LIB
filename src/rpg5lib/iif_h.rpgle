@@ -10,7 +10,7 @@
 //
 //  IIF_H
 //
-//  r5_iif_* family functions
+//  Family of "iif" functions
 //
 //  April 2022
 //
