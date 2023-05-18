@@ -95,6 +95,37 @@ DCL        VAR(&OVRSRCFILE) TYPE(*CHAR) LEN(10)
 /*  - Prepara el entorno de compilación                           -  */
 /*  ---------------------------------------------------------------  */
 
+   CRTMSGF    MSGF(&LIB/RPG5MSG) TEXT('RPG5LIB message file')
+   MONMSG     CPF0000
+
+   RMVMSGD    MSGID(RP51000) MSGF(&LIB/RPG5MSG)
+   MONMSG     CPF0000
+   ADDMSGD    MSGID(RP51000)                                      +
+              MSGF(&LIB/RPG5MSG)                                  +
+              MSG('El valor no se corresponde con un atributo de +
+                   pantalla válido.')                             +
+              SECLVL('El atributo de pantalla especicifaco tiene +
+                      el valor &1 hex, que no es válido.')        +
+              FMT((*CHAR 2))
+
+   RMVMSGD    MSGID(RP51001) MSGF(&LIB/RPG5MSG)
+   MONMSG     CPF0000
+   ADDMSGD    MSGID(RP51001)                                      +
+              MSGF(&LIB/RPG5MSG)                                  +
+              MSG('El valor especificado &1 hex no es un color de +
+                   pantalla válido.')                             +
+              SECLVL('El valor &1 hex no es un color de pantalla +
+                      válido que se pueda asignar a un atributo +
+                      de pantalla (palabra clave DSPATR de DDS).') +
+              FMT((*CHAR 2))
+
+   RMVMSGD    MSGID(RP51002) MSGF(&LIB/RPG5MSG)
+   MONMSG     CPF0000
+   ADDMSGD    MSGID(RP51002)                                      +
+              MSGF(&LIB/RPG5MSG)                                  +
+              MSG('El atributo de pantalla está establecido como +
+                   no visualizable.')
+
 /*  ---------------------------------------------------------------  */
 /*  - Compilación                                                 -  */
 /*  ---------------------------------------------------------------  */

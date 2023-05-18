@@ -2,7 +2,7 @@
 
 //  Package : RPG5LIB
 //  SrvPgm  : R5TUI
-//  Module  : DSM
+//  Module  : UIM
 //
 //  User Interface Manager
 //

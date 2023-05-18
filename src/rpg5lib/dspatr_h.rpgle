@@ -54,10 +54,10 @@ end-pr;
 
 dcl-pr r5_dspatr_set_color extproc(*DCLCASE);
    atr like(r5_dspatr_t);
-   color char(1) const;
+   color like(r5_dspatr_color_t) value;
 end-pr;
 
-dcl-pr r5_dspatr_get_color char(1) extproc(*DCLCASE);
+dcl-pr r5_dspatr_get_color like(r5_dspatr_color_t) extproc(*DCLCASE);
    atr like(r5_dspatr_t);
 end-pr;
 
@@ -67,9 +67,8 @@ end-pr;
 
 dcl-pr r5_dspatr_is_color like(r5_boolean_t) extproc(*DCLCASE);
    atr like(r5_dspatr_t);
-   color char(1) const;
+   color like(r5_dspatr_color_t) value;
 end-pr;
-
 
 dcl-pr r5_dspatr_set_input_output_field extproc(*DCLCASE);
    atr like(r5_dspatr_t);
@@ -141,6 +140,10 @@ dcl-pr r5_dspatr_is_non_displayable like(r5_boolean_t) extproc(*DCLCASE);
    atr like(r5_dspatr_t);
 end-pr;
 
+dcl-pr r5_dspatr_is_displayable like(r5_boolean_t) extproc(*DCLCASE);
+   atr like(r5_dspatr_t);
+end-pr;
+
 dcl-pr r5_dspatr_set_protected_field extproc(*DCLCASE);
    atr like(r5_dspatr_t);
    pr  like(r5_boolean_t) const;
@@ -149,4 +152,17 @@ end-pr;
 dcl-pr r5_dspatr_is_protected_field like(r5_boolean_t) extproc(*DCLCASE);
    atr like(r5_dspatr_t);
 end-pr;
+
+dcl-pr r5_dspatr_to_hex char(2) extproc(*DCLCASE);
+   atr like(r5_dspatr_t) value;
+end-pr;
+
+dcl-pr r5_dspatr_to_bin char(8) extproc(*DCLCASE);
+   atr like(r5_dspatr_t) value;
+end-pr;
+
+dcl-pr r5_dspatr_debug varchar(20) extproc(*DCLCASE);
+   atr like(r5_dspatr_t) value;
+end-pr;
+
 

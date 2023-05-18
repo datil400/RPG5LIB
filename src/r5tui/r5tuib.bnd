@@ -23,8 +23,12 @@ strpgmexp pgmlvl(*CURRENT) signature('R5TUI          ')
    export symbol('r5_dspatr_is_underlined')
    export symbol('r5_dspatr_set_non_display')
    export symbol('r5_dspatr_is_non_displayable')
+   export symbol('r5_dspatr_is_displayable')
    export symbol('r5_dspatr_set_protected_field')
    export symbol('r5_dspatr_is_protected_field')
+   export symbol('r5_dspatr_to_hex')
+   export symbol('r5_dspatr_to_bin')
+   export symbol('r5_dspatr_debug')
 
    export symbol('r5_text_box')
 endpgmexp

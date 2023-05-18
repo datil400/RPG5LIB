@@ -27,4 +27,5 @@ dcl-pr r5_text_box extproc(*DCLCASE);
    o_title_id likeds(r5_qualified_msg_id_t) options(*NOPASS) const;
 end-pr;
 
+dcl-pr r5_display_command_line_window extpgm('QUSCMDLN') end-pr;
 

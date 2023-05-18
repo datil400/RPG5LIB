@@ -13,6 +13,30 @@
 //
 //  Comments
 //
+//    DSPATR bit layout
+//
+//     7  6  5  4  3  2  1  0
+//   +-----------------------+
+//   |PR  0  1 CS BL UL HI RI|
+//   +-----------------------+
+//
+//    PR = protect
+//    CS = column separator
+//    BL = blink
+//    UL = underline
+//    HI = high intensity
+//    RI = reverse image
+//    UL+HI+RI = non display
+//
+//    COLORS
+//
+//    turquoise = CS
+//    white = HI
+//    red (no blinking) = BL
+//    red (with blinking) = HI + BL
+//    yellow = CS + HI
+//    pink = CS + BL
+//    blue = CS + HI + BL
 
 
 ctl-opt nomain;
@@ -20,11 +44,15 @@ ctl-opt option(*SRCSTMT: *NODEBUGIO);
 ctl-opt bnddir('RPG5LIB');
 
 
+/COPY API,mih_h
 /COPY RPG5LIB,excmgr_h
 /COPY RPG5LIB,dspatr_h
 
 
-// Inicializa atributo de pantalla para visualización 'normal'
+// Inicializa el atributo de pantalla para una visualización 'normal',
+// sin ningún atributo activado.
+//
+// El color verde se asocia a este atributo.
 
 dcl-proc r5_dspatr_set_normal export;
 
@@ -37,7 +65,8 @@ dcl-proc r5_dspatr_set_normal export;
 end-proc;
 
 
-// Averigua si el atributo de visualización es normal.
+// Averigua si el atributo de visualización es normal, es decir,
+// no tiene ningún atributo activado.
 
 dcl-proc r5_dspatr_is_normal export;
 
@@ -49,13 +78,13 @@ dcl-proc r5_dspatr_is_normal export;
 end-proc;
 
 
-// Inicializa a un color para el atributo de pantalla.
+// Inicializa a un color el atributo de pantalla.
 
 dcl-proc r5_dspatr_set_color export;
 
    dcl-pi *n;
       atr like(r5_dspatr_t);
-      color char(1) const;
+      color like(r5_dspatr_color_t) value;
    end-pi;
 
    dcl-s p char(1);
@@ -64,7 +93,7 @@ dcl-proc r5_dspatr_set_color export;
    verify_color(color);
 
    if is_attribute(atr);
-      p = %bitand(atr: R5_DSPATR_PROTECTED);
+      p = %bitand(atr: R5_DSPATR_PROTECTED); // Guardar bit de 'protegido'
       atr = %bitor(color: p);
    else;
       atr = color;
@@ -73,39 +102,57 @@ dcl-proc r5_dspatr_set_color export;
 end-proc;
 
 
+// Si está activado el atributo de 'no visualización',
+// no es posible obtener un color válido.
+
 dcl-proc r5_dspatr_get_color export;
 
-   dcl-pi *n char(1);
+   dcl-pi *n like(r5_dspatr_color_t);
       atr like(r5_dspatr_t);
    end-pi;
 
-   dcl-s color char(1);
-   dcl-s exception like(r5_object_t);
+   dcl-s color like(r5_dspatr_color_t);
 
 
    verify_attribute(atr);
-
-   if r5_dspatr_is_non_displayable(atr);
-      // UTILIZAR UN MENSAJE EXPECÍFICO EN RPG5MSGF
-      exception = r5_exception_new('CPF9897': *OMIT:
-                                  'Atributo de pantalla no visualizable');
-      r5_throw(exception);
-   endif;
+   verify_if_displayable(atr);
 
    color = %bitand(atr: X'3A');        // 3A hex = 0011 1010
+
    verify_color(color);
    return color;
 end-proc;
 
 
+// Lanza una excepción (RP51002) si el atributo de pantalla
+// es no visualizable.
+
+dcl-proc verify_if_displayable;
+
+   dcl-pi *n extproc(*DCLCASE);
+      atr like(r5_dspatr_t);
+   end-pi;
+
+   dcl-s exception like(r5_object_t);
+
+   if r5_dspatr_is_displayable(atr);
+      return;
+   endif;
+
+   exception = r5_exception_new('RP51002': 'RPG5MSG');
+   r5_throw(exception);
+   return;
+end-proc;
+
+
+// Comprueba si el atributo de pantalla es del color especificado.
+
 dcl-proc r5_dspatr_is_color export;
 
    dcl-pi *n like(r5_boolean_t);
       atr like(r5_dspatr_t);
-      color char(1) const;
+      color like(r5_dspatr_color_t) value;
    end-pi;
-
-   dcl-s mask char(1) inz(X'3A');      // 0011 1010
 
 
    callp(E) verify_color(color);
@@ -121,17 +168,18 @@ dcl-proc r5_dspatr_is_color export;
       return *OFF;
    endif;
 
-   return (%bitand(atr: mask) = color);
+   return (%bitand(atr: X'3A') = color);    // 3A hex = 0011 1010
 end-proc;
 
 
 dcl-proc verify_color;
 
    dcl-pi *N extproc(*DCLCASE);
-      color char(1) const;
+      color like(r5_dspatr_color_t) value;
    end-pi;
 
    dcl-s exception like(r5_object_t);
+   dcl-s hex_value char(2);
 
 
    if color = R5_DSPATR_GREEN
@@ -145,10 +193,9 @@ dcl-proc verify_color;
       return;
    endif;
 
-   // UTILIZAR UN MENSAJE EXPECÍFICO EN RPG5MSGF
-   exception = r5_exception_new('CPF9897': *OMIT: 'No es un color válido');
+   HexToChar(%addr(hex_value): %addr(color): %size(hex_value));
+   exception = r5_exception_new('RP51001': 'RPG5MSG': hex_value);
    r5_throw(exception);
-
    return;
 end-proc;
 
@@ -159,7 +206,7 @@ dcl-proc r5_dspatr_has_color export;
       atr like(r5_dspatr_t);
    end-pi;
 
-   dcl-s color char(1);
+   dcl-s color like(r5_dspatr_color_t);
 
 
    if not is_attribute(atr);
@@ -196,7 +243,7 @@ dcl-proc r5_dspatr_set_input_output_field export;
       atr like(r5_dspatr_t);
    end-pi;
 
-   // Usar 'set_default_input_output_field' para establecer los atributos
+   // Usar 'set_default_output_field' para establecer los atributos
    // por defecto para un campo de entrada salida.
 
    atr = %bitor(R5_DSPATR_NORMAL: R5_DSPATR_UNDERLINE: R5_DSPATR_HIGH_INTENSITY);
@@ -204,7 +251,9 @@ dcl-proc r5_dspatr_set_input_output_field export;
 end-proc;
 
 
-// Averigua si es un campo de entrada/salida
+// Averigua si es un campo de entrada/salida.
+//
+// Un campo 'no visualizable' puede ser de entrada/salida.
 
 dcl-proc r5_dspatr_is_input_output_field export;
 
@@ -217,9 +266,9 @@ dcl-proc r5_dspatr_is_input_output_field export;
       return *OFF;
    endif;
 
-   if r5_dspatr_is_non_displayable(atr);
-      return *OFF;
-   endif;
+   //if r5_dspatr_is_non_displayable(atr);
+   //   return *OFF;
+   //endif;
 
    return (%bitand(atr: X'E0') = R5_DSPATR_NORMAL);   // E0 hex = 1110 0000
 end-proc;
@@ -242,6 +291,8 @@ end-proc;
 
 
 // Averigua si es un campo de solo salida.
+//
+// Un campo 'no visualizable' puede ser de salida.
 
 dcl-proc r5_dspatr_is_output_field export;
 
@@ -256,9 +307,9 @@ dcl-proc r5_dspatr_is_output_field export;
       return *OFF;
    endif;
 
-   if r5_dspatr_is_non_displayable(atr);
-      return *OFF;
-   endif;
+   //if r5_dspatr_is_non_displayable(atr);
+   //   return *OFF;
+   //endif;
 
    out_atr = %bitor(R5_DSPATR_NORMAL: R5_DSPATR_PROTECTED);
    return (%bitand(atr: X'E0') = out_atr);            // E0 hex = 1110 0000
@@ -383,9 +434,9 @@ dcl-proc r5_dspatr_is_column_separators export;
       return *OFF;
    endif;
 
-   if r5_dspatr_is_non_displayable(atr);
-      return *OFF;
-   endif;
+   //if r5_dspatr_is_non_displayable(atr);
+   //   return *OFF;
+   //endif;
 
    return (%bitand(atr: R5_DSPATR_COLUMN_SEPARATOR) = R5_DSPATR_COLUMN_SEPARATOR);
 end-proc;
@@ -477,10 +528,10 @@ end-proc;
 
 // Activa o desactiva el atributo de no visualización.
 //
-// Cuando se activa el atributo de no visualización se
-// perderá información de 'estado' del atributo de pantalla
+// Cuando se activan los bits de no visualización se
+// pierde información de 'estado' del atributo de pantalla
 // que se está cambiando. Esto es debido a que se aprovechan
-// los atributos subrayado, alta intensidad e imagen invertida
+// los bits de subrayado, alta intensidad e imagen invertida
 // para activar la no visualización.
 //
 // Al desactivar la no visualización no será posible recuperar
@@ -527,6 +578,23 @@ dcl-proc r5_dspatr_is_non_displayable export;
 end-proc;
 
 
+// Averigua si NO está activado el atributo de no visualización.
+
+dcl-proc r5_dspatr_is_displayable export;
+
+   dcl-pi *n like(r5_boolean_t);
+      atr like(r5_dspatr_t);
+   end-pi;
+
+
+   if not is_attribute(atr);
+      return *OFF;
+   endif;
+
+   return (%bitand(atr: R5_DSPATR_NON_DISPLAY) <> R5_DSPATR_NON_DISPLAY);
+end-proc;
+
+
 // Activa o desactiva el atributo de campo protegido.
 
 dcl-proc r5_dspatr_set_protected_field export;
@@ -565,6 +633,9 @@ dcl-proc r5_dspatr_is_protected_field export;
 end-proc;
 
 
+// Lanza una excepción (RP51000) si el atributo de pantalla
+// no es válido.
+
 dcl-proc verify_attribute;
 
    dcl-pi *N extproc(*DCLCASE);
@@ -572,19 +643,23 @@ dcl-proc verify_attribute;
    end-pi;
 
    dcl-s exception like(r5_object_t);
+   dcl-s hex_value char(2);
 
 
    if is_attribute(atr);
       return;
    endif;
 
-   // UTILIZAR UN MENSAJE EXPECÍFICO EN RPG5MSGF
-   exception = r5_exception_new('CPF9897': *OMIT: 'No es un atributo de pantalla válido');
+   HexToChar(%addr(hex_value): %addr(atr): %size(hex_value));
+   exception = r5_exception_new('RP51000': 'RPG5MSG': hex_value);
    r5_throw(exception);
 
    return;
 end-proc;
 
+
+// Un atributo de pantalla siempre tiene los bits 6 y 5 con
+// el valor '.01. ....' (20 HEX)
 
 dcl-proc is_attribute;
 
@@ -595,4 +670,107 @@ dcl-proc is_attribute;
    // si .XX. .... & 0110 0000 = .01. ....
 
    return (%bitand(atr: X'60') = X'20');
+end-proc;
+
+
+dcl-proc r5_dspatr_to_hex export;
+
+   dcl-pi *N char(2);
+      atr like(r5_dspatr_t) value;
+   end-pi;
+
+   dcl-s hex char(2);
+
+   HexToChar(%addr(hex): %addr(atr): %size(hex));
+   return hex;
+end-proc;
+
+
+dcl-proc r5_dspatr_to_bin export;
+
+   dcl-pi *N char(8);
+      atr like(r5_dspatr_t) value;
+   end-pi;
+
+   dcl-ds bin;
+      bit char(1) dim(8);
+   end-ds;
+   dcl-s int_atr like(r5_byte_t) based(atr_ptr);
+   dcl-s b like(r5_byte_t);
+
+
+   atr_ptr = %addr(atr);
+
+   for b = %elem(bit) downto 1;
+      if %rem(int_atr: 2) = 0;
+         bit(b) = '0';
+      else;
+         bit(b) = '1';
+      endif;
+      int_atr = %div(int_atr: 2);
+   endfor;
+   return bin;
+end-proc;
+
+
+dcl-proc r5_dspatr_debug export;
+
+   dcl-pi *N varchar(20);
+      atr like(r5_dspatr_t) value;
+   end-pi;
+
+   dcl-s debug varchar(20);
+
+   debug = '';
+
+   select;
+   when r5_dspatr_is_normal(atr);
+      debug = 'NORMAL';
+
+   when r5_dspatr_is_non_displayable(atr);
+      debug = 'NON DIPLAYABLE';
+
+   when is_attribute(atr);
+      debug = 'UNDEFINED';
+
+   other;
+      if r5_dspatr_is_protected_field(atr);
+         if debug <> '';
+            debug = debug + '+';
+         endif;
+         debug = debug + 'PR';
+      endif;
+      if r5_dspatr_is_column_separators(atr);
+         if debug <> '';
+            debug = debug + '+';
+         endif;
+         debug = debug + 'CS';
+      endif;
+      if r5_dspatr_is_blinking(atr);
+         if debug <> '';
+            debug = debug + '+';
+         endif;
+         debug = debug + 'BL';
+      endif;
+      if r5_dspatr_is_underlined(atr);
+         if debug <> '';
+            debug = debug + '+';
+         endif;
+         debug = debug + 'UL';
+      endif;
+      if r5_dspatr_is_high_intensity(atr);
+         if debug <> '';
+            debug = debug + '+';
+         endif;
+         debug = debug + 'HI';
+      endif;
+      if r5_dspatr_is_reversed(atr);
+         if debug <> '';
+            debug = debug + '+';
+         endif;
+         debug = debug + 'RI';
+      endif;
+   endsl;
+
+   return debug;
 end-proc;
