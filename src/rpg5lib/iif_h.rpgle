@@ -65,6 +65,11 @@ end-pr;
 /EOF
 /ENDIF
 
+/IF DEFINED(R5_IIF_DEPRECATED)
+/EOF
+/ENDIF
+/DEFINE R5_IIF_DEPRECATED
+
 // Por compatiblidad con programa de servicio UMISC
 
 dcl-pr iif like(r5_small_varchar_t) extproc('r5_iif_char');
