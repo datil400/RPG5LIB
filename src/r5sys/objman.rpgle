@@ -73,14 +73,9 @@ end-proc;
 //      'biblioteca/objeto'
 //      'Objeto    Biblioteca'
 //
-// 'o_member' si no se indica por defecto *FIRST.
+//  'o_member' si no se indica por defecto *FIRST.
 //
 //  'o_use_ovr'  ¿Utilizar alteración temporal?
-
-//   Basado en un procedimiento similar de:
-//
-//   Bob Cozzi's "RPG TnT: 101 Tips 'n Techniques for RPG IV"
-//   (c) 2006 by Robert Cozzi, Jr.
 
 dcl-proc r5_check_member export;
 
@@ -118,8 +113,9 @@ dcl-proc r5_check_member export;
           );
    if r5_api_error_occurred(error);
       if not r5_in(error.msgId: 'CPF32DE': 'CPF3C22': 'CPF3C23': 'CPF3C26': 'CPF3C27') and
-         not (%subst(error.msgID: 1: 5) = 'CPF98') and
-         not (%subst(error.msgID: 1: 5) = 'CPF81');
+         //not (%subst(error.msgID: 1: 5) = 'CPF98') and
+         //not (%subst(error.msgID: 1: 5) = 'CPF81');
+         not r5_in(%subst(error.msgID: 1: 5): 'CPF98': 'CPF81');
 
          r5_joblog('%s: %s': %proc(): error.msgId);
       endif;

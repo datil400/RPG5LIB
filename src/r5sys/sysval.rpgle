@@ -82,18 +82,21 @@ dcl-proc r5_get_system_value export;
 
    // La API QWCRSVAL permite recuperar más de un valor del sistema
    // en una sola llamada. Esta operativa complica algo más el código,
-   // pero no demasiado. Aunque se podría apreciar una mejora en el
-   // rendimiento cuando se recuperan a la vez varios valores, esa
-   // ganancia no se aprecia en escenarios realistas. Además, la
-   // claridad en el código debería predominar sobre el rendimiento.
+   // pero no demasiado. Aunque se podría mejorar el rendimiento
+   // cuando se recuperan varios valores a la vez, esa ganancia no se
+   // aprecia en escenarios realistas.
 
-    r5_api_error_init_for_exception(error);
-    RtvSysVal( buffer
-             : %size(buffer)
-             : 1
-             : sysval
-             : error
-             );
+   r5_api_error_init_for_exception(error);
+   callp(E) RtvSysVal( buffer
+                     : %size(buffer)
+                     : 1
+                     : sysval
+                     : error
+                     );
+    if %error();
+       exception = r5_exception_new('RP52000': 'RPG5MSG': %trim(sysval));
+       r5_throw(exception);
+    endif;
 
     info_ptr = %addr(buffer) + buffer.sysValOffs;
 

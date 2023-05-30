@@ -42,645 +42,967 @@
 //  http://www.ibm.com/support/knowledgecenter/ssw_ibm_i_72/apis/qwcrsval.htm
 
 
-dcl-ds qabnormsw_t qualified template;
+// Previous end of system indicator
+
+dcl-ds r5_qabnormsw_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qacglvl_t qualified template;
+// Accounting level
+
+dcl-ds r5_qacglvl_t qualified template;
    value char(10) dim(8);
 end-ds;
 
-dcl-ds qactjob_t qualified template;
+// Active jobs
+
+dcl-ds r5_qactjob_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qadlactj_t qualified template;
+// Additional active jobs
+
+dcl-ds r5_qadlactj_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qadlspla_t qualified template;
+// Additional spool storage
+
+dcl-ds r5_qadlspla_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qadltotj_t qualified template;
+// Additional total jobs
+
+dcl-ds r5_qadltotj_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qalwjobitp_t qualified template;
+// Allow jobs to be interrupted
+
+dcl-ds r5_qalwjobitp_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qalwobjrst_t qualified template;
+// Allow object restore options
+
+dcl-ds r5_qalwobjrst_t qualified template;
    value char(10) dim(15);
 end-ds;
 
-dcl-ds qalwusrdmn_t qualified template;
+// Allow user domain
+
+dcl-ds r5_qalwusrdmn_t qualified template;
    value char(10) dim(50);
 end-ds;
 
-dcl-ds qastlvl_t qualified template;
+// Assistance level
+
+dcl-ds r5_qastlvl_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qatnpgm_t qualified template;
+// Attention program
+
+dcl-ds r5_qatnpgm_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qaudctl_t qualified template;
+// Auditing control
+
+dcl-ds r5_qaudctl_t qualified template;
    value char(10) dim(5);
 end-ds;
 
-dcl-ds qaudendacn_t qualified template;
+// Auditing end action
+
+dcl-ds r5_qaudendacn_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qaudfrclvl_t qualified template;
+// Auditing force level
+
+dcl-ds r5_qaudfrclvl_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qaudlvl_t qualified template;
+// Auditing level
+
+dcl-ds r5_qaudlvl_t qualified template;
    value char(10) dim(16);
 end-ds;
 
-dcl-ds qaudlvl2_t qualified template;
+// Auditing level extension
+
+dcl-ds r5_qaudlvl2_t qualified template;
    value char(10) dim(99);
 end-ds;
 
-dcl-ds qautocfg_t qualified template;
+// Automatic configuration indicator
+
+dcl-ds r5_qautocfg_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qautormt_t qualified template;
+// Automatic configuration for remote controllers
+
+dcl-ds r5_qautormt_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qautosprpt_t qualified template;
+// Automatic system disabled reporting
+
+dcl-ds r5_qautosprpt_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qautovrt_t qualified template;
+// Automatic configuration for virtual devices
+
+dcl-ds r5_qautovrt_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qbasactlvl_t qualified template;
+// Base activity level
+
+dcl-ds r5_qbasactlvl_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qbaspool_t qualified template;
+// Base pool minimum size
+
+dcl-ds r5_qbaspool_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qbaspool2_t qualified template;
+// Base pool minimum size (long)
+
+dcl-ds r5_qbaspool2_t qualified template;
    value int(20);
 end-ds;
 
-dcl-ds qbookpath_t qualified template;
+// Book and bookshelf search path
+
+dcl-ds r5_qbookpath_t qualified template;
    value char(63) dim(5);
 end-ds;
 
-dcl-ds qccsid_t qualified template;
+// Coded character set identifier
+
+dcl-ds r5_qccsid_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qcentury_t qualified template;
+// Century indicator
+
+dcl-ds r5_qcentury_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qcfgmsgq_t qualified template;
+// Configuration message queue
+
+dcl-ds r5_qcfgmsgq_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qchrid_t qualified template;
+// Character set and code page
+
+dcl-ds r5_qchrid_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qchridctl_t qualified template;
+// Character identifier control
+
+dcl-ds r5_qchridctl_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qcmnarb_t qualified template;
+// Communication arbiters
+
+dcl-ds r5_qcmnarb_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qcmnrcylmt_t qualified template;
+// Communications recovery limit
+
+dcl-ds r5_qcmnrcylmt_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qcntryid_t qualified template;
+// Country or region identifier
+
+dcl-ds r5_qcntryid_t qualified template;
    value char(2);
 end-ds;
 
-dcl-ds qconsole_t qualified template;
+// Console name
+
+dcl-ds r5_qconsole_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qcrtaut_t qualified template;
+// Create authority
+
+dcl-ds r5_qcrtaut_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qcrtobjaud_t qualified template;
+// Create object auditing
+
+dcl-ds r5_qcrtobjaud_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qctlsbsd_t qualified template;
+// Controlling subsystem
+
+dcl-ds r5_qctlsbsd_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qcursym_t qualified template;
+// Currency symbol
+
+dcl-ds r5_qcursym_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qdate_t qualified template;
+// System date
+
+dcl-ds r5_qdate_t qualified template;
    value char(7);
 end-ds;
 
-dcl-ds qdatetime_t qualified template;
+// System date and time
+
+dcl-ds r5_qdatetime_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qdatfmt_t qualified template;
+// Date format
+
+dcl-ds r5_qdatfmt_t qualified template;
    value char(3);
 end-ds;
 
-dcl-ds qdatsep_t qualified template;
+// Date separator
+
+dcl-ds r5_qdatsep_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qday_t qualified template;
+// Day
+
+dcl-ds r5_qday_t qualified template;
    value char(3);
 end-ds;
 
-dcl-ds qdayofweek_t qualified template;
+// Day of the week
+
+dcl-ds r5_qdayofweek_t qualified template;
    value char(4);
 end-ds;
 
-dcl-ds qdbfstccol_t qualified template;
+// Database file statistics collection
+
+dcl-ds r5_qdbfstccol_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qdbrcvywt_t qualified template;
+// Database recovery wait
+
+dcl-ds r5_qdbrcvywt_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qdecfmt_t qualified template;
+// Decimal format
+
+dcl-ds r5_qdecfmt_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qdevnaming_t qualified template;
+// Device naming convention
+
+dcl-ds r5_qdevnaming_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qdevrcyacn_t qualified template;
+// Device recovery action
+
+dcl-ds r5_qdevrcyacn_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qdscjobitv_t qualified template;
+// Disconnect job interval
+
+dcl-ds r5_qdscjobitv_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qdspsgninf_t qualified template;
+// Sign-on information
+
+dcl-ds r5_qdspsgninf_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qdynptyadj_t qualified template;
+// Dynamic priority adjustment
+
+dcl-ds r5_qdynptyadj_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qdynptyscd_t qualified template;
+// Dynamic priority scheduler
+
+dcl-ds r5_qdynptyscd_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qendjoblmt_t qualified template;
+// End job limit
+
+dcl-ds r5_qendjoblmt_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qfrccvnrst_t qualified template;
+// Force conversion on restore
+
+dcl-ds r5_qfrccvnrst_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qhour_t qualified template;
+// Hour
+
+dcl-ds r5_qhour_t qualified template;
    value char(2);
 end-ds;
 
-dcl-ds qhstlogsiz_t qualified template;
+// History log size
+
+dcl-ds r5_qhstlogsiz_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qigc_t qualified template;
+// DBCS installed
+
+dcl-ds r5_qigc_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qigccdefnt_t qualified template;
+// Double-byte coded font name
+
+dcl-ds r5_qigccdefnt_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qigcfntsiz_t qualified template;
+// Double-byte coded font point size
+
+dcl-ds r5_qigcfntsiz_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qinactitv_t qualified template;
+// Inactive job time-out
+
+dcl-ds r5_qinactitv_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qinactmsgq_t qualified template;
+// Inactive message queue
+
+dcl-ds r5_qinactmsgq_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qipldattim_t qualified template;
+// Automatic IPL date and time
+
+dcl-ds r5_qipldattim_t qualified template;
    value char(13);
 end-ds;
 
-dcl-ds qiplsts_t qualified template;
+// IPL status
+
+dcl-ds r5_qiplsts_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qipltype_t qualified template;
+// IPL type
+
+dcl-ds r5_qipltype_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qjobmsgqfl_t qualified template;
+// Job message queue full
+
+dcl-ds r5_qjobmsgqfl_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qjobmsgqmx_t qualified template;
+// Job message queue maximum size
+
+dcl-ds r5_qjobmsgqmx_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qjobmsgqsz_t qualified template;
+// Job message queue initial size
+
+dcl-ds r5_qjobmsgqsz_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qjobmsgqtl_t qualified template;
+// Maximum job message queue initial size
+
+dcl-ds r5_qjobmsgqtl_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qjobspla_t qualified template;
+// Initial spooling size
+
+dcl-ds r5_qjobspla_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qkbdbuf_t qualified template;
+// Keyboard buffer
+
+dcl-ds r5_qkbdbuf_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qkbdtype_t qualified template;
+// Keyboard type
+
+dcl-ds r5_qkbdtype_t qualified template;
    value char(3);
 end-ds;
 
-dcl-ds qlangid_t qualified template;
+// Language identifier
+
+dcl-ds r5_qlangid_t qualified template;
    value char(3);
 end-ds;
 
-dcl-ds qleapadj_t qualified template;
+// Leap year adjustment
+
+dcl-ds r5_qleapadj_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qliblcklvl_t qualified template;
+// Library locking level
+
+dcl-ds r5_qliblcklvl_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qlmtdevssn_t qualified template;
+// Limit device session
+
+dcl-ds r5_qlmtdevssn_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qlmtsecofr_t qualified template;
+// Limit security officer
+
+dcl-ds r5_qlmtsecofr_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qlocale_t qualified template;
+// Locale path name
+
+dcl-ds r5_qlocale_t qualified template;
    value char(2080);
 end-ds;
 
-dcl-ds qlogoutput_t qualified template;
+// Job log output
+
+dcl-ds r5_qlogoutput_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qmaxactlvl_t qualified template;
+// Maximum activity level
+
+dcl-ds r5_qmaxactlvl_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qmaxjob_t qualified template;
+// Maximum number of jobs
+
+dcl-ds r5_qmaxjob_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qmaxsgnacn_t qualified template;
+// Maximum sign-on action
+
+dcl-ds r5_qmaxsgnacn_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qmaxsign_t qualified template;
+// Maximum not valid sign-on
+
+dcl-ds r5_qmaxsign_t qualified template;
    value char(6);
 end-ds;
 
-dcl-ds qmaxsplf_t qualified template;
+// Maximum spooled files per job
+
+dcl-ds r5_qmaxsplf_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qmchpool_t qualified template;
+// Machine pool size
+
+dcl-ds r5_qmchpool_t qualified template;
    value int(10);
 end-ds;
 
- /IF DEFINED(*V7R2M0)
-dcl-ds qmchpool2_t qualified template;
+/IF DEFINED(*V7R2M0)
+
+// Machine pool size (long)
+
+dcl-ds r5_qmchpool2_t qualified template;
    value int(20);
 end-ds;
- /ENDIF
 
-dcl-ds qminute_t qualified template;
+/ENDIF
+
+// Minute
+
+dcl-ds r5_qminute_t qualified template;
    value char(2);
 end-ds;
 
-dcl-ds qmltthdacn_t qualified template;
+// Multithreaded job action
+
+dcl-ds r5_qmltthdacn_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qmodel_t qualified template;
+// System model
+
+dcl-ds r5_qmodel_t qualified template;
    value char(4);
 end-ds;
 
-dcl-ds qmonth_t qualified template;
+// Month
+
+dcl-ds r5_qmonth_t qualified template;
    value char(2);
 end-ds;
 
-dcl-ds qpasthrsvr_t qualified template;
+// Pass-through servers
+
+dcl-ds r5_qpasthrsvr_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qpfradj_t qualified template;
+// Performance adjustment
+
+dcl-ds r5_qpfradj_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qprbftr_t qualified template;
+// Problem filter
+
+dcl-ds r5_qprbftr_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qprbhlditv_t qualified template;
+// Problem hold interval
+
+dcl-ds r5_qprbhlditv_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qprcfeat_t qualified template;
+// Processor feature
+
+dcl-ds r5_qprcfeat_t qualified template;
    value char(4);
 end-ds;
 
-dcl-ds qprcmlttsk_t qualified template;
+// Processor multitasking
+
+dcl-ds r5_qprcmlttsk_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qprtdev_t qualified template;
+// Printer device
+
+dcl-ds r5_qprtdev_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qprtkeyfmt_t qualified template;
+// Print key format
+
+dcl-ds r5_qprtkeyfmt_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qprttxt_t qualified template;
+// Print text
+
+dcl-ds r5_qprttxt_t qualified template;
    value char(30);
 end-ds;
 
-dcl-ds qpwdchgblk_t qualified template;
+// Block password change
+
+dcl-ds r5_qpwdchgblk_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qpwdexpitv_t qualified template;
+// Days password valid
+
+dcl-ds r5_qpwdexpitv_t qualified template;
    value char(6);
 end-ds;
 
-dcl-ds qpwdexpwrn_t qualified template;
+// Password expiration warning
+
+dcl-ds r5_qpwdexpwrn_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qpwdlmtajc_t qualified template;
+// Limit adjacent digits
+
+dcl-ds r5_qpwdlmtajc_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qpwdlmtchr_t qualified template;
+// Limit characters
+
+dcl-ds r5_qpwdlmtchr_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qpwdlmtrep_t qualified template;
+// Limit repeat characters
+
+dcl-ds r5_qpwdlmtrep_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qpwdlvl_t qualified template;
+// Password level
+
+dcl-ds r5_qpwdlvl_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qpwdmaxlen_t qualified template;
+// Maximum password length
+
+dcl-ds r5_qpwdmaxlen_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qpwdminlen_t qualified template;
+// Minimum password length
+
+dcl-ds r5_qpwdminlen_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qpwdposdif_t qualified template;
+// Limit character positions
+
+dcl-ds r5_qpwdposdif_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qpwdrqddgt_t qualified template;
+// Required password digits
+
+dcl-ds r5_qpwdrqddgt_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qpwdrqddif_t qualified template;
+// Duplicate password
+
+dcl-ds r5_qpwdrqddif_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qpwdrules_t qualified template;
+// Password rules
+
+dcl-ds r5_qpwdrules_t qualified template;
    value char(15) dim(50);
 end-ds;
 
-dcl-ds qpwdvldpgm_t qualified template;
-   value char(10);
-end-ds;
+// Password validation program
 
-dcl-ds qpwrdwnlmt_T qualified template;
-   value int(10);
-end-ds;
-
-dcl-ds qpwrrstipl_t qualified template;
-   value char(1);
-end-ds;
-
-dcl-ds qqrydegree_t qualified template;
-   value char(10);
-end-ds;
-
-dcl-ds qqrytimlmt_t qualified template;
-   value char(10);
-end-ds;
-
-dcl-ds qrclsplttg_t qualified template;
-   value char(10);
-end-ds;
-
-dcl-ds qretsvrsec_t qualified template;
-   value char(1);
-end-ds;
-
-dcl-ds qrmtipl_t qualified template;
-   value char(1);
-end-ds;
-
-dcl-ds qrmtsign_t qualified template;
+dcl-ds r5_qpwdvldpgm_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qrmtsrvatr_t qualified template;
+// Power down limit
+
+dcl-ds r5_qpwrdwnlmt_T qualified template;
+   value int(10);
+end-ds;
+
+// Power restore IPL
+
+dcl-ds r5_qpwrrstipl_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qsavaccpth_t qualified template;
+// Parallel processing degree
+
+dcl-ds r5_qqrydegree_t qualified template;
+   value char(10);
+end-ds;
+
+// Query processing time limit
+
+dcl-ds r5_qqrytimlmt_t qualified template;
+   value char(10);
+end-ds;
+
+// Reclaim spool storage
+
+dcl-ds r5_qrclsplttg_t qualified template;
+   value char(10);
+end-ds;
+
+// Retain server security data
+
+dcl-ds r5_qretsvrsec_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qscanfs_t qualified template;
+// Remote IPL
+
+dcl-ds r5_qrmtipl_t qualified template;
+   value char(1);
+end-ds;
+
+// Remote sign-on
+
+dcl-ds r5_qrmtsign_t qualified template;
+   value char(20);
+end-ds;
+
+// Remote service attribute
+
+dcl-ds r5_qrmtsrvatr_t qualified template;
+   value char(1);
+end-ds;
+
+// Save access paths
+
+dcl-ds r5_qsavaccpth_t qualified template;
+   value char(1);
+end-ds;
+
+// Scan file systems
+
+dcl-ds r5_qscanfs_t qualified template;
    value char(10) dim(20);
 end-ds;
 
-dcl-ds qscanfsctl_t qualified template;
+// Scan file systems control
+
+dcl-ds r5_qscanfsctl_t qualified template;
    value char(10) dim(20);
 end-ds;
 
-dcl-ds qscpfcons_t qualified template;
+// IPL action with console problem
+
+dcl-ds r5_qscpfcons_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qsecond_t qualified template;
+// Second
+
+dcl-ds r5_qsecond_t qualified template;
    value char(2);
 end-ds;
 
-dcl-ds qsecurity_t qualified template;
+// Security level
+
+dcl-ds r5_qsecurity_t qualified template;
    value char(2);
 end-ds;
 
-dcl-ds qsetjobatr_t qualified template;
+// Set job attributes from locale
+
+dcl-ds r5_qsetjobatr_t qualified template;
    value char(10) dim(16);
 end-ds;
 
-dcl-ds qsfwerrlog_t qualified template;
+// Software error log
+
+dcl-ds r5_qsfwerrlog_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qshrmemctl_t qualified template;
+// Shared memory control
+
+dcl-ds r5_qshrmemctl_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qspcenv_t qualified template;
+// Special environment
+
+dcl-ds r5_qspcenv_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qSplfacn_t qualified template;
+// Spooled file action
+
+dcl-ds r5_qsplfacn_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qsrlnbr_t qualified template;
+// Serial number
+
+dcl-ds r5_qsrlnbr_t qualified template;
    value char(8);
 end-ds;
 
-dcl-ds qsrtseq_t qualified template;
+// Sort sequence table
+
+dcl-ds r5_qsrtseq_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qsrvdmp_t qualified template;
+// Service dump
+
+dcl-ds r5_qsrvdmp_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qsslcsl_t qualified template;
+// Transport Layer Security cipher specification list
+
+dcl-ds r5_qsslcsl_t qualified template;
    value char(40) dim(96);
 end-ds;
 
-dcl-ds qsslcslctl_t qualified template;
+// Transport Layer Security cipher specification list control
+
+dcl-ds r5_qsslcslctl_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qsslpcl_t qualified template;
+// Transport Layer Security protocols
+
+dcl-ds r5_qsslpcl_t qualified template;
    value char(10) dim(10);
 end-ds;
 
-dcl-ds qstglowacn_t qualified template;
+// Auxiliary storage lower limit action
+
+dcl-ds r5_qstglowacn_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qstglowlmt_t qualified template;
+// Auxiliary storage lower limit
+
+dcl-ds r5_qstglowlmt_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qstrprtwtr_t qualified template;
+// Start printer writer
+
+dcl-ds r5_qstrprtwtr_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qstruppgm_t qualified template;
+// Startup program name
+
+dcl-ds r5_qstruppgm_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qstsmsg_t qualified template;
+// Status messages
+
+dcl-ds r5_qstsmsg_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qsvrautitv_t qualified template;
+// Server authentication interval
+
+dcl-ds r5_qsvrautitv_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qsyslibl_t qualified template;
+// System library list
+
+dcl-ds r5_qsyslibl_t qualified template;
    value char(10) dim(15);
 end-ds;
 
-dcl-ds qthdrscadj_t qualified template;
+// Thread resources adjustment
+
+dcl-ds r5_qthdrscadj_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qthdrscafn_t qualified template;
+// Thread resources affinity
+
+dcl-ds r5_qthdrscafn_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qtimadj_t qualified template;
+// Time adjustment
+
+dcl-ds r5_qtimadj_t qualified template;
    value char(30);
 end-ds;
 
-dcl-ds qtime_t qualified template;
+// System time
+
+dcl-ds r5_qtime_t qualified template;
    value char(9);
 end-ds;
 
-dcl-ds qtimsep_t qualified template;
+// Time separator
+
+dcl-ds r5_qtimsep_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qtimzon_t qualified template;
+// Time zone
+
+dcl-ds r5_qtimzon_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qtotjob_t qualified template;
+// Total jobs
+
+dcl-ds r5_qtotjob_t qualified template;
    value int(10);
 end-ds;
 
-dcl-ds qtsepool_t qualified template;
+// Time-slice end pool
+
+dcl-ds r5_qtsepool_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qupsdlytim_t qualified template;
+// UPS delay time
+
+dcl-ds r5_qupsdlytim_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds qupsmsgq_t qualified template;
+// UPS message queue
+
+dcl-ds r5_qupsmsgq_t qualified template;
    value char(20);
 end-ds;
 
-dcl-ds quseadpaut_t qualified template;
+// Use adopted authority
+
+dcl-ds r5_quseadpaut_t qualified template;
    value char(10);
 end-ds;
 
-dcl-ds qusrlibl_t qualified template;
+// User library list
+
+dcl-ds r5_qusrlibl_t qualified template;
    value char(10) dim(25);
 end-ds;
 
-dcl-ds qutcoffSet_t qualified template;
+// Coordinated universal time offset
+
+dcl-ds r5_qutcoffSet_t qualified template;
    value char(5);
 end-ds;
 
-dcl-ds qvfyobjrst_t qualified template;
+// Verify object on restore
+
+dcl-ds r5_qvfyobjrst_t qualified template;
    value char(1);
 end-ds;
 
-dcl-ds qyear_t qualified template;
+// Year
+
+dcl-ds r5_qyear_t qualified template;
    value char(2);
 end-ds;
 

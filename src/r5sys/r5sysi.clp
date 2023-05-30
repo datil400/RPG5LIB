@@ -95,6 +95,20 @@ DCL        VAR(&OVRSRCFILE) TYPE(*CHAR) LEN(10)
 /*  - Prepara el entorno de compilación                           -  */
 /*  ---------------------------------------------------------------  */
 
+   CRTMSGF    MSGF(&LIB/RPG5MSG) TEXT('RPG5LIB message file')
+   MONMSG     CPF0000
+
+   RMVMSGD    MSGID(RP52000) MSGF(&LIB/RPG5MSG)
+   MONMSG     CPF0000
+   ADDMSGD    MSGID(RP52000)                                      +
+              MSGF(&LIB/RPG5MSG)                                  +
+              MSG('El valor del sistema &1 no se ha podido recuperar.') +
+              SECLVL('Causa . . . . . :   Se ha encontrado un error +
+                      cuando se intentaba recuperar un valor del +
+                      sistema. Consulte los mensajes anteriores para +
+                      averiguar el motivo.')                      +
+              FMT((*CHAR 10))
+
 /*  ---------------------------------------------------------------  */
 /*  - Compilación                                                 -  */
 /*  ---------------------------------------------------------------  */
