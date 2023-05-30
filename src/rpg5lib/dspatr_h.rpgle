@@ -165,4 +165,15 @@ dcl-pr r5_dspatr_debug varchar(20) extproc(*DCLCASE);
    atr like(r5_dspatr_t) value;
 end-pr;
 
+dcl-pr r5_dspatr_set_default_input_output_field extproc(*DCLCASE);
+   atr like(r5_dspatr_t);
+end-pr;
+
+dcl-pr r5_dspatr_reset_default_input_output_field extproc(*DCLCASE) end-pr;
+
+dcl-pr r5_dspatr_set_default_output_field extproc(*DCLCASE);
+   atr like(r5_dspatr_t);
+end-pr;
+
+dcl-pr r5_dspatr_reset_default_output_field extproc(*DCLCASE) end-pr;
 

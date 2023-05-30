@@ -126,6 +126,28 @@ DCL        VAR(&OVRSRCFILE) TYPE(*CHAR) LEN(10)
               MSG('El atributo de pantalla está establecido como +
                    no visualizable.')
 
+   RMVMSGD    MSGID(RP51003) MSGF(&LIB/RPG5MSG)
+   MONMSG     CPF0000
+   ADDMSGD    MSGID(RP51003)                                      +
+              MSGF(&LIB/RPG5MSG)                                  +
+              MSG('El atributo de pantalla no puede estar protegido.') +
+              SECLVL('Causa . . . . . :   El atributo de pantalla tiene +
+                     establecida la opción de campo protegido cuando +
+                     debiera estar desactivada. Esto suele suceder +
+                     cuando se define un atributo para un campo de +
+                     E/S y se deja activo el atributo de protección.')
+
+   RMVMSGD    MSGID(RP51004) MSGF(&LIB/RPG5MSG)
+   MONMSG     CPF0000
+   ADDMSGD    MSGID(RP51004) MSGF(&LIB/RPG5MSG)                   +
+              MSG('El atributo de pantalla tiene que estar protegido.') +
+              SECLVL('Causa . . . . . :   El atributo de pantalla no +
+                     tiene establecida la opción de campo protegido +
+                     cuando debiera estar activada. Esto suele +
+                     suceder cuando se define un atributo para +
+                     un campo de sólo salila y no tiene activo +
+                     el atributo de campo protegido.')
+
 /*  ---------------------------------------------------------------  */
 /*  - Compilación                                                 -  */
 /*  ---------------------------------------------------------------  */

@@ -49,6 +49,14 @@ ctl-opt bnddir('RPG5LIB');
 /COPY RPG5LIB,dspatr_h
 
 
+dcl-c DFT_OUTPUT_FIELD_ATR  X'A2';         // PR+HI
+dcl-c DFT_INPUT_OUTPUT_FIELD_ATR  X'26';   // UL+HI
+
+
+dcl-s default_output_field_attributes like(r5_dspatr_t) inz(DFT_OUTPUT_FIELD_ATR);
+dcl-s default_input_output_field_attributes like(r5_dspatr_t) inz(DFT_INPUT_OUTPUT_FIELD_ATR);
+
+
 // Inicializa el atributo de pantalla para una visualización 'normal',
 // sin ningún atributo activado.
 //
@@ -235,7 +243,51 @@ dcl-proc r5_dspatr_has_color export;
 end-proc;
 
 
-//  Inicializa el atributo de pantalla para un campo de entrada/salida.
+dcl-proc r5_dspatr_set_default_input_output_field export;
+
+   dcl-pi *n;
+      atr like(r5_dspatr_t);
+   end-pi;
+
+
+   verify_attribute(atr);
+   verify_if_unprotected(atr);
+
+   default_input_output_field_attributes = atr;
+   return;
+end-proc;
+
+
+dcl-proc verify_if_unprotected;
+
+   dcl-pi *n extproc(*DCLCASE);
+      atr like(r5_dspatr_t);
+   end-pi;
+
+   dcl-s exception like(r5_object_t);
+
+
+   if not r5_dspatr_is_protected_field(atr);
+      return;
+   endif;
+
+   exception = r5_exception_new('RP51003': 'RPG5MSG');
+   r5_throw(exception);
+   return;
+end-proc;
+
+
+dcl-proc r5_dspatr_reset_default_input_output_field export;
+
+   reset default_input_output_field_attributes;
+   return;
+end-proc;
+
+
+// Inicializa el atributo de pantalla para un campo de entrada/salida.
+//
+// Usar 'set_default_input_output_field' para establecer los atributos
+// por defecto para un campo de entrada salida.
 
 dcl-proc r5_dspatr_set_input_output_field export;
 
@@ -243,10 +295,7 @@ dcl-proc r5_dspatr_set_input_output_field export;
       atr like(r5_dspatr_t);
    end-pi;
 
-   // Usar 'set_default_output_field' para establecer los atributos
-   // por defecto para un campo de entrada salida.
-
-   atr = %bitor(R5_DSPATR_NORMAL: R5_DSPATR_UNDERLINE: R5_DSPATR_HIGH_INTENSITY);
+   atr = default_input_output_field_attributes;
    return;
 end-proc;
 
@@ -266,15 +315,55 @@ dcl-proc r5_dspatr_is_input_output_field export;
       return *OFF;
    endif;
 
-   //if r5_dspatr_is_non_displayable(atr);
-   //   return *OFF;
-   //endif;
-
    return (%bitand(atr: X'E0') = R5_DSPATR_NORMAL);   // E0 hex = 1110 0000
 end-proc;
 
 
+dcl-proc r5_dspatr_set_default_output_field export;
+
+   dcl-pi *n;
+      atr like(r5_dspatr_t);
+   end-pi;
+
+
+   verify_attribute(atr);
+   verify_if_protected(atr);
+
+   default_output_field_attributes = atr;
+   return;
+end-proc;
+
+
+dcl-proc verify_if_protected;
+
+   dcl-pi *n extproc(*DCLCASE);
+      atr like(r5_dspatr_t);
+   end-pi;
+
+   dcl-s exception like(r5_object_t);
+
+
+   if r5_dspatr_is_protected_field(atr);
+      return;
+   endif;
+
+   exception = r5_exception_new('RP51004': 'RPG5MSG');
+   r5_throw(exception);
+   return;
+end-proc;
+
+
+dcl-proc r5_dspatr_reset_default_output_field export;
+
+   reset default_output_field_attributes;
+   return;
+end-proc;
+
+
 // Inicializa el atributo de pantalla para un campo de sólo salida.
+//
+// Usar 'set_default_output_field' para establecer los atributos
+// por defecto para un campo de salida.
 
 dcl-proc r5_dspatr_set_output_field export;
 
@@ -282,10 +371,7 @@ dcl-proc r5_dspatr_set_output_field export;
       atr like(r5_dspatr_t);
    end-pi;
 
-   // Usar 'set_default_output_field' para establecer los atributos
-   // por defecto para un campo de salida.
-
-   atr = %bitor(R5_DSPATR_NORMAL: R5_DSPATR_PROTECTED: R5_DSPATR_HIGH_INTENSITY);
+   atr = default_output_field_attributes;
    return;
 end-proc;
 
@@ -307,12 +393,46 @@ dcl-proc r5_dspatr_is_output_field export;
       return *OFF;
    endif;
 
-   //if r5_dspatr_is_non_displayable(atr);
-   //   return *OFF;
-   //endif;
-
    out_atr = %bitor(R5_DSPATR_NORMAL: R5_DSPATR_PROTECTED);
    return (%bitand(atr: X'E0') = out_atr);            // E0 hex = 1110 0000
+end-proc;
+
+
+// Activa o desactiva el atributo de campo protegido.
+
+dcl-proc r5_dspatr_set_protected_field export;
+
+   dcl-pi *n;
+      atr like(r5_dspatr_t);
+      pr  like(r5_boolean_t) const;
+   end-pi;
+
+
+   verify_attribute(atr);
+
+   if pr = *ON;
+      atr = %bitor(atr: R5_DSPATR_PROTECTED);
+   else;
+      atr = %bitand(atr: %bitnot(R5_DSPATR_PROTECTED));
+   endif;
+   return;
+end-proc;
+
+
+// Averigua si está activo el atributo de campo protegido.
+
+dcl-proc r5_dspatr_is_protected_field export;
+
+   dcl-pi *n like(r5_boolean_t);
+      atr like(r5_dspatr_t);
+   end-pi;
+
+
+   if not is_attribute(atr);
+      return *OFF;
+   endif;
+
+   return (%bitand(atr: R5_DSPATR_PROTECTED) = R5_DSPATR_PROTECTED);
 end-proc;
 
 
@@ -433,10 +553,6 @@ dcl-proc r5_dspatr_is_column_separators export;
    if not is_attribute(atr);
       return *OFF;
    endif;
-
-   //if r5_dspatr_is_non_displayable(atr);
-   //   return *OFF;
-   //endif;
 
    return (%bitand(atr: R5_DSPATR_COLUMN_SEPARATOR) = R5_DSPATR_COLUMN_SEPARATOR);
 end-proc;
@@ -595,44 +711,6 @@ dcl-proc r5_dspatr_is_displayable export;
 end-proc;
 
 
-// Activa o desactiva el atributo de campo protegido.
-
-dcl-proc r5_dspatr_set_protected_field export;
-
-   dcl-pi *n;
-      atr like(r5_dspatr_t);
-      pr  like(r5_boolean_t) const;
-   end-pi;
-
-
-   verify_attribute(atr);
-
-   if pr = *ON;
-      atr = %bitor(atr: R5_DSPATR_PROTECTED);
-   else;
-      atr = %bitand(atr: %bitnot(R5_DSPATR_PROTECTED));
-   endif;
-   return;
-end-proc;
-
-
-// Averigua si está activo el atributo de campo protegido.
-
-dcl-proc r5_dspatr_is_protected_field export;
-
-   dcl-pi *n like(r5_boolean_t);
-      atr like(r5_dspatr_t);
-   end-pi;
-
-
-   if not is_attribute(atr);
-      return *OFF;
-   endif;
-
-   return (%bitand(atr: R5_DSPATR_PROTECTED) = R5_DSPATR_PROTECTED);
-end-proc;
-
-
 // Lanza una excepción (RP51000) si el atributo de pantalla
 // no es válido.
 
@@ -653,7 +731,6 @@ dcl-proc verify_attribute;
    HexToChar(%addr(hex_value): %addr(atr): %size(hex_value));
    exception = r5_exception_new('RP51000': 'RPG5MSG': hex_value);
    r5_throw(exception);
-
    return;
 end-proc;
 
@@ -728,7 +805,7 @@ dcl-proc r5_dspatr_debug export;
       debug = 'NORMAL';
 
    when r5_dspatr_is_non_displayable(atr);
-      debug = 'NON DIPLAYABLE';
+      debug = 'NON DISPLAYABLE';
 
    when is_attribute(atr);
       debug = 'UNDEFINED';
@@ -774,3 +851,4 @@ dcl-proc r5_dspatr_debug export;
 
    return debug;
 end-proc;
+

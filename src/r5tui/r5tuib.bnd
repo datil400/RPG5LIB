@@ -29,6 +29,10 @@ strpgmexp pgmlvl(*CURRENT) signature('R5TUI          ')
    export symbol('r5_dspatr_to_hex')
    export symbol('r5_dspatr_to_bin')
    export symbol('r5_dspatr_debug')
+   export symbol('r5_dspatr_set_default_input_output_field')
+   export symbol('r5_dspatr_reset_default_input_output_field')
+   export symbol('r5_dspatr_set_default_output_field')
+   export symbol('r5_dspatr_reset_default_output_field')
 
    export symbol('r5_text_box')
 endpgmexp
