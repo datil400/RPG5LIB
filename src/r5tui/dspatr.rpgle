@@ -807,7 +807,7 @@ dcl-proc r5_dspatr_debug export;
    when r5_dspatr_is_non_displayable(atr);
       debug = 'NON DISPLAYABLE';
 
-   when is_attribute(atr);
+   when not is_attribute(atr);
       debug = 'UNDEFINED';
 
    other;
