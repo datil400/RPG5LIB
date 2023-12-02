@@ -8,5 +8,6 @@ strpgmexp pgmlvl(*CURRENT) signature('R5STRING        ')
    export symbol('r5_buffer_to_varlen')
    export symbol('r5_varlen_to_buffer')
    export symbol('r5_char_to_dec')
+   export symbol('r5_spaces')
+   export symbol('r5_word_wrap')
 endpgmexp
-

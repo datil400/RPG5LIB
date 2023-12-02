@@ -351,7 +351,7 @@ end-proc;
 dcl-proc r5_char_to_dec export;
 
    dcl-pi *N like(r5_packed_t);
-      string varchar(64) options(*TRIM) value;
+      string varchar(126) options(*TRIM) value;
       o_mask char(3) options(*NOPASS) value;
    end-pi;
 
@@ -388,11 +388,21 @@ dcl-proc r5_char_to_dec export;
 end-proc;
 
 
-dcl-proc r5_word_wrap export;
+dcl-proc r5_spaces export;
 
-   dcl-pi *N;
-
+   dcl-pi *N varchar(16382) rtnparm;
+      length like(r5_short_t) const;
    end-pi;
 
-   return;
+   dcl-s result varchar(16382);
+   dcl-s s like(length);
+
+   result = '';
+   for s = 1 to length;
+      result += ' ';
+   endfor;
+
+   return result;
 end-proc;
+
+

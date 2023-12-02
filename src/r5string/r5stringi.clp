@@ -87,13 +87,61 @@ DCL        VAR(&OVRSRCFILE) TYPE(*CHAR) LEN(10)
                    || &OSVER || ').') MSGTYPE(*ESCAPE)
    ENDDO
 
+   CHKOBJ     OBJ(API) OBJTYPE(*FILE)
+   CHKOBJ     OBJ(RPG5LIB) OBJTYPE(*FILE)
+   CHKOBJ     OBJ(R5UTILS) OBJTYPE(*SRVPGM)
+   CHKOBJ     OBJ(R5EXCMGR) OBJTYPE(*SRVPGM)
+
 /*  ================================================================ */
 /*  =  CREAR OBJETOS                                               = */
 /*  ================================================================ */
 
+   CRTBNDDIR  BNDDIR(&LIB/RPG5LIB) AUT(*USE) +
+              TEXT('RPG5LIB Binding directory')
+   MONMSG     MSGID(CPF0000)
+
+   ADDBNDDIRE BNDDIR(&LIB/RPG5LIB) OBJ((R5STRING))
+   MONMSG     MSGID(CPF0000)
+
 /*  ---------------------------------------------------------------  */
 /*  - Prepara el entorno de compilación                           -  */
 /*  ---------------------------------------------------------------  */
+
+   CRTMSGF    MSGF(&LIB/RPG5MSG) TEXT('RPG5LIB message file')
+   MONMSG     CPF0000
+
+   RMVMSGD    MSGID(RP50100) MSGF(&LIB/RPG5MSG)
+   MONMSG     CPF0000
+   ADDMSGD    MSGID(RP50100)                                      +
+              MSGF(&LIB/RPG5MSG)                                  +
+              MSG('El ancho máximo del texto no es válido.')      +
+              SECLVL('Causa . . . . . :   Se ha especificado un ancho +
+                      máximo de &1 posiciones para un texto de +
+                      resultado, pero no está permitido un valor +
+                      negativo o cero. &N +
+                      Recuperación . .:   Especifique un valor +
+                      positivo para el ancho y vuelva a intentar la +
+                      operación.')                                +
+              FMT((*BIN  4))
+
+/* ESTE MENSAJE ES GENÉRICO PARA TODA LA BIBLIOTECA RPG5LIB */
+/* INCLUIRLO EN UN PROGRAMA DE INSTALACION ESPECÍFICO */
+
+   RMVMSGD    MSGID(RP5FF00) MSGF(&LIB/RPG5MSG)
+   MONMSG     CPF0000
+   ADDMSGD    MSGID(RP5FF00)                                      +
+              MSGF(&LIB/RPG5MSG)                                  +
+              MSG('No se ha especificado una función de respuesta +
+                   (callback) requerida.') +
+              SECLVL('Causa . . . . . :   El procedimiento &1 del +
+                      programa &2 de la biblioteca &3 requiere una +
+                      función de respuesta (callback) como parámetro, +
+                      pero no se ha especificado.&N +
+                      Recuperación . .:   Especifique la dirección +
+                      de una función de respuesta que se ajuste al +
+                      prototipo esperado. Consulte con el fabricante +
+                      del software.')                             +
+              FMT((*CHAR 256) (*CHAR 10) (*CHAR 10))
 
 /*  ---------------------------------------------------------------  */
 /*  - Compilación                                                 -  */
@@ -101,11 +149,13 @@ DCL        VAR(&OVRSRCFILE) TYPE(*CHAR) LEN(10)
 
    CRTRPGMOD  MODULE(QTEMP/STRING) +
               SRCFILE(&LIB/&RPGLESRC) DBGVIEW(&DBG)
+   CRTRPGMOD  MODULE(QTEMP/WORDWRAP) +
+              SRCFILE(&LIB/&RPGLESRC) DBGVIEW(&DBG)
    RTVMBRD    FILE(&LIB/&RPGLESRC) MBR(R5STRINGB) TEXT(&TEXT)
-   CRTSRVPGM  SRVPGM(&LIB/R5STRING) MODULE(QTEMP/STRING) +
-              EXPORT(*SRCFILE) SRCFILE(&LIB/&SRVSRC) +
-              SRCMBR(R5STRINGB) TEXT(&TEXT) +
-              OPTION(*DUPPROC)
+   CRTSRVPGM  SRVPGM(&LIB/R5STRING) MODULE(QTEMP/STRING +
+              QTEMP/WORDWRAP) EXPORT(*SRCFILE) +
+              SRCFILE(&LIB/&SRVSRC) SRCMBR(R5STRINGB) +
+              TEXT(&TEXT) OPTION(*DUPPROC)
    SNDPGMMSG  MSG('Se ha creado el programa de servicio R5STRING.') +
               MSGTYPE(*COMP)
 

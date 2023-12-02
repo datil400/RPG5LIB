@@ -77,6 +77,10 @@ dcl-pr r5_varlen_to_buffer extproc(*DCLCASE);
 end-pr;
 
 dcl-pr r5_char_to_dec like(r5_packed_t) extproc(*DCLCASE);
-   string varchar(64) options(*TRIM) value;
+   string varchar(126) options(*TRIM) value;
    o_mask char(3) options(*NOPASS) value;
+end-pr;
+
+dcl-pr r5_spaces varchar(16382) rtnparm extproc(*DCLCASE);
+   length like(r5_short_t) const;
 end-pr;
