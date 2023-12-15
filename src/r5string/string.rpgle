@@ -351,7 +351,7 @@ end-proc;
 dcl-proc r5_char_to_dec export;
 
    dcl-pi *N like(r5_packed_t);
-      string varchar(126) options(*TRIM) value;
+      string varchar(64) options(*TRIM) value;
       o_mask char(3) options(*NOPASS) value;
    end-pi;
 
