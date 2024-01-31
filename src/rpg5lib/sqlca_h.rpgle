@@ -12,6 +12,8 @@
 //
 //  SQL communication area
 //
+//  https://www.ibm.com/docs/en/i/7.5?topic=area-field-descriptions
+//
 //  Mayo 2021
 //
 //  Use:
