@@ -24,6 +24,16 @@ ctl-opt bnddir('RPG5LIB');
 /COPY RPG5LIB,calllevelh
 /COPY RPG5LIB,wordwrap_h
 
+dcl-ds rp50100_msgdta_t qualified template;
+   width int(10);
+end-ds;
+
+dcl-ds rp5ff00_msgdta_t qualified template;
+   procedure_name char(256);
+   program_name char(10);
+   program_library char(10);
+end-ds;
+
 
 //  Divide un texto en líneas para que se ajusten a un ancho. Cada línea
 //  contiene palabras completas, salvo que la palabra sea mayor que el
@@ -33,13 +43,13 @@ ctl-opt bnddir('RPG5LIB');
 //  Cada palabra está delimitada por espacios en blanco. Si entre palabras
 //  hay más de un espacio en blanco, se convierte en uno solo.
 //
-//  Además se puede indicar una marca de nueva línea para separar el texto
+//  Además se puede incluir una marca de nueva línea para separar el texto
 //  en párrafos.
 //
 //  Cada línea de texto generada se trata a través de una función de
 //  respuesta (callback) que tiene que ajustarse al siguiente prototipo:
 //
-//    dcl-pr handler;
+//    dcl-pr word_wrap_handler;
 //       context like(r5_pointer_t) value;
 //       line varchar(16382) options(*VARSIZE) const;
 //       line_nbr like(r5_short_t) const;
@@ -48,7 +58,7 @@ ctl-opt bnddir('RPG5LIB');
 //       is_end_of_text like(r5_boolean_t) const;
 //    end-pr;
 //
-//  'context' hace referencia a un espacio de memoria definida por el
+//  'context' hace referencia a un espacio de memoria definido por el
 //  usuario por si fuera necesario pasar información al manejador.
 //
 //  'line' es la siguiente línea completa generada a partir del texto.
@@ -72,7 +82,7 @@ dcl-proc r5_word_wrap export;
       o_line_feed_sym varchar(5) options(*TRIM: *NOPASS) const;
    end-pi;
 
-   dcl-pr do extproc(line_handler);
+   dcl-pr process_line_event extproc(line_handler);
       context like(r5_pointer_t) value;
       line varchar(16382) options(*VARSIZE) const;
       line_nbr like(r5_short_t) const;
@@ -92,15 +102,6 @@ dcl-proc r5_word_wrap export;
    dcl-s word_spacing like(r5_small_t);
 
    dcl-s exception like(r5_object_t);
-   dcl-ds this likeds(r5_call_level_info_t);
-   dcl-ds rp50100 qualified;                     //
-      width int(10);
-   end-ds;
-   dcl-ds rp5ff00 qualified;
-      procedure_name char(256);
-      program_name char(10);
-      program_library char(10);
-   end-ds;
 
    dcl-s line like(text);
    dcl-s line_number like(r5_short_t) inz(0);
@@ -108,26 +109,17 @@ dcl-proc r5_word_wrap export;
    dcl-s is_end_of_text like(r5_boolean_t);
 
 
-   // Ancho máximo incorrecto
-
    if width <= 0;
-      rp50100.width = width;
-      exception = r5_exception_new('RP50100': 'RPG5MSG': rp50100);
+      exception = R5_INVALID_MAX_WIDTH_EXCEPTION(width);
       r5_throw(exception);
    endif;
-
-   // Requiere función de respuesta (callback)
 
    if line_handler = *NULL;
-      r5_this(this);
-      rp5ff00.procedure_name = this.procedure_name;
-      rp5ff00.program_name = this.program_name;
-      rp5ff00.program_library = this.program_library;
-      exception = r5_exception_new('RP5FF00': 'RPG5MSG': rp5ff00);
+      exception = R5_EXPECTED_CALLBACK_EXCEPTION();
       r5_throw(exception);
    endif;
 
-   if text = '' or width <= 0 or line_handler = *NULL;
+   if text = '';
       return;
    endif;
 
@@ -213,8 +205,11 @@ dcl-proc r5_word_wrap export;
          is_end_of_text = (end = %len(work_text));
 
          line_number += 1;
-         do(context: %trim(line): line_number: width
-                   : is_end_of_paragraph: is_end_of_text);
+         process_line_event( context
+                           : %trim(line): line_number: width
+                           : is_end_of_paragraph
+                           : is_end_of_text
+                           );
 
          line = '';
       endif;
@@ -226,8 +221,44 @@ dcl-proc r5_word_wrap export;
 
    if %len(line) > 0;
       line_number += 1;
-      do(context: %trim(line): line_number: width: *ON: *ON);
+      process_line_event( context
+                        : %trim(line): line_number: width
+                        : *ON: *ON
+                        );
    endif;
 
    return;
+end-proc;
+
+
+dcl-proc R5_INVALID_MAX_WIDTH_EXCEPTION;
+
+   dcl-pi *N like(r5_object_t);
+      width int(10) const;
+   end-pi;
+
+   dcl-s exception like(r5_object_t);
+   dcl-ds msgdta likeds(rp50100_msgdta_t);
+
+   msgdta.width = width;
+   exception = r5_exception_new('RP50100': 'RPG5MSG': msgdta);
+   return exception;
+end-proc;
+
+
+dcl-proc R5_EXPECTED_CALLBACK_EXCEPTION;
+
+   dcl-pi *N like(r5_object_t);
+   end-pi;
+
+   dcl-s exception like(r5_object_t);
+   dcl-ds msgdta likeds(rp5ff00_msgdta_t);
+   dcl-ds caller likeds(r5_call_level_info_t);
+
+   r5_caller(caller);
+   msgdta.procedure_name = caller.procedure_name;
+   msgdta.program_name = caller.program_name;
+   msgdta.program_library = caller.program_library;
+   exception = r5_exception_new('RP5FF00': 'RPG5MSG': msgdta);
+   return exception;
 end-proc;
