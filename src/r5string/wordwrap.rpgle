@@ -102,6 +102,7 @@ dcl-proc r5_word_wrap export;
    dcl-s word_spacing like(r5_small_t);
 
    dcl-s exception like(r5_object_t);
+   dcl-ds this likeds(r5_call_level_info_t);
 
    dcl-s line like(text);
    dcl-s line_number like(r5_short_t) inz(0);
@@ -115,7 +116,8 @@ dcl-proc r5_word_wrap export;
    endif;
 
    if line_handler = *NULL;
-      exception = R5_EXPECTED_CALLBACK_EXCEPTION();
+      r5_caller(this);
+      exception = R5_EXPECTED_CALLBACK_EXCEPTION(this);
       r5_throw(exception);
    endif;
 
@@ -143,7 +145,7 @@ dcl-proc r5_word_wrap export;
       // asegura que al final del texto haya al menos una.
 
       if %scanr(line_feed_sym: text) <> (%len(text) - %len(line_feed_sym) + 1);
-         work_text = text + line_feed_sym;
+         work_text += line_feed_sym;
       endif;
 
       work_text = %scanrpl( line_feed_sym
@@ -166,7 +168,7 @@ dcl-proc r5_word_wrap export;
    // que se le añade al final como indicador de división de palabra.
    // No se realiza ningún ajuste a sílabas completas.
    //
-   // Cuando se encuenta un símbolo de 'nueva línea' se corta el texto
+   // Cuando se encuentra un símbolo de 'nueva línea' se corta el texto
    // en ese punto y se comienza en la siguiente.
    //
    // Los espacios en blanco del inicio y final del texto original se
@@ -249,16 +251,15 @@ end-proc;
 dcl-proc R5_EXPECTED_CALLBACK_EXCEPTION;
 
    dcl-pi *N like(r5_object_t);
+      call_level likeds(r5_call_level_info_t) const;
    end-pi;
 
    dcl-s exception like(r5_object_t);
    dcl-ds msgdta likeds(rp5ff00_msgdta_t);
-   dcl-ds caller likeds(r5_call_level_info_t);
 
-   r5_caller(caller);
-   msgdta.procedure_name = caller.procedure_name;
-   msgdta.program_name = caller.program_name;
-   msgdta.program_library = caller.program_library;
+   msgdta.procedure_name = call_level.procedure_name;
+   msgdta.program_name = call_level.program_name;
+   msgdta.program_library = call_level.program_library;
    exception = r5_exception_new('RP5FF00': 'RPG5MSG': msgdta);
    return exception;
 end-proc;
