@@ -30,6 +30,45 @@ ctl-opt bnddir('RPG5LIB');
 dcl-c JOB_CCSID  0;
 
 
+//  Devuelve la cadena 'str' con un relleno por la izquierda. Se conservan
+//  los espacios en blanco iniciales y finales que pudiera contener 'str'.
+//  El ancho de la cadena resultante se ajusta a 'length'.
+//  Si 'pad' no se indica, el relleno serán blancos.
+
+dcl-proc r5_left_pad export;
+
+   dcl-pi *N like(r5_long_string_t) rtnparm;
+      str like(r5_long_string_t) options(*VARSIZE) const;
+      length like(r5_short_t) const;
+      o_pad varchar(128) options(*NOPASS) const;
+   end-pi;
+
+   dcl-s result like(r5_long_string_t);
+   dcl-s pad like(o_pad) inz(' ');
+
+
+   if length <= 0;
+      return '';
+   endif;
+
+   if %parms() >= %parmnum(o_pad);
+      pad = o_pad;
+   endif;
+
+   if %len(pad) = 0;
+      return str;
+   endif;
+
+   if length < %len(str);
+      result = %subst(str: 1: length);
+   else;
+      result = r5_repeat(pad: length/%len(pad) + 1);  // Usar r5_ceil() en math
+      result = r5_left(result: length - %len(str)) + str;
+   endif;
+   return result;
+end-proc;
+
+
 //  Extrae una subcadena comenzando por la izquierda.
 //
 //  Si 'length' es cero, devuelve una cadena vacía.
@@ -52,7 +91,46 @@ dcl-proc r5_left export;
 end-proc;
 
 
-//  Extrae una subcadena comenzando por la derrecha.
+//  Devuelve la cadena 'str' con un relleno por la derecha. Se conservan
+//  los espacios en blanco iniciales y finales que pudiera contener 'str'.
+//  El ancho de la cadena resultante se ajusta a 'length'.
+//  Si 'pad' no se indica, el relleno serán blancos.
+
+dcl-proc r5_right_pad export;
+
+   dcl-pi *N like(r5_long_string_t) rtnparm;
+      str like(r5_long_string_t) options(*VARSIZE) const;
+      length like(r5_short_t) const;
+      o_pad varchar(128) options(*NOPASS) const;
+   end-pi;
+
+   dcl-s result like(r5_long_string_t);
+   dcl-s pad like(o_pad) inz(' ');
+
+
+   if length <= 0;
+      return '';
+   endif;
+
+   if %parms() >= %parmnum(o_pad);
+      pad = o_pad;
+   endif;
+
+   if %len(pad) = 0;
+      return str;
+   endif;
+
+   if length < %len(str);
+      result = %subst(str: 1: length);
+   else;
+      result = r5_repeat(pad: length/%len(pad) + 1);  // Usar r5_ceil() en math
+      result = str + r5_right(r5_left(result: length): length - %len(str));
+   endif;
+   return result;
+end-proc;
+
+
+//  Extrae una subcadena comenzando por la derecha.
 //
 //  Si 'length' es cero, devuelve una cadena vacía.
 //
@@ -74,6 +152,54 @@ dcl-proc r5_right export;
                 : %int(r5_max(%len(string): length) - length + 1)
                 : %int(r5_min(%len(string): length))
                 );
+end-proc;
+
+
+dcl-proc r5_center export;
+
+   dcl-pi *N like(r5_short_string_t);
+      str like(r5_short_string_t) options(*VARSIZE) const;
+      width like(r5_short_t) const;
+      o_pad like(r5_char_t) options(*NOPASS) const;
+   end-pi;
+
+   dcl-s pad like(o_pad) inz(' ');
+   dcl-s t like(r5_short_t);
+   dcl-s r like(r5_short_t);
+
+
+   if width <= 0 or width <= %len(str) or %len(str) = 0;
+      return str;
+   endif;
+
+   if %parms() >= %parmnum(o_pad);
+      pad = o_pad;
+   endif;
+
+   t = (width - %len(str)) / 2;
+   r = %rem((width - %len(str)): 2);
+   return r5_repeat(pad: t)
+        + str
+        + r5_repeat(pad: t + r);
+end-proc;
+
+
+// Repite la expresión 'n' veces
+
+dcl-proc r5_repeat export;
+
+   dcl-pi *N like(r5_var_buffer64_t) rtnparm;
+      expr like(r5_long_string_t) options(*VARSIZE) const;
+      times like(r5_int_t) const;
+   end-pi;
+
+   dcl-s result like(r5_var_buffer64_t);
+   dcl-s t like(times);
+
+   for t = 1 to times;
+      result += expr;
+   endfor;
+   return result;
 end-proc;
 
 
@@ -390,8 +516,8 @@ end-proc;
 
 dcl-proc r5_spaces export;
 
-   dcl-pi *N varchar(16382) rtnparm;
-      length like(r5_short_t) const;
+   dcl-pi *N like(r5_var_buffer64_t) rtnparm;
+      length like(r5_int_t) const;
    end-pi;
 
    dcl-s result varchar(16382);
@@ -403,6 +529,71 @@ dcl-proc r5_spaces export;
    endfor;
 
    return result;
+end-proc;
+
+
+//  Limpia un texto de símbolos extraños.
+//
+//  'symbols' es la lista de símbolos a eliminar de la cadena
+//  de entrada.
+
+dcl-proc r5_clean_text_simple export;
+
+   dcl-pi *N like(r5_var_buffer64_t) rtnparm;
+      text like(r5_var_buffer64_t) options(*VARSIZE) const;
+      symbols varchar(128) const;
+   end-pi;
+
+   dcl-s result like(text);
+   dcl-s pos like(r5_int_t);
+   dcl-s char like(r5_char_t);
+
+    for pos = 1 to %len(text);
+       char = %subst(text: pos: 1);
+       if  %check(symbols: char) > 0;
+          result += char;
+       endif;
+    endfor;
+    return result;
+end-proc;
+
+
+//  Limpia un texto según un criterio totalmente abierto e
+//  indefinido a priori.
+//
+//  'filter_handler' establece el procedimiento de filtrado
+//  definido por el usuario. Debe ajustarse al siguiente
+//  prototipo:
+//
+//    dcl-pr filter like(r5_boolean_t)
+//       char like(r5_char_t) value;
+//    end-pr;
+//
+//  Si 'filter' devuelve *ON, el caracter es correcto y
+//  'supera' el filtro.
+
+dcl-proc r5_clean_text_extended export;
+
+   dcl-pi *N like(r5_var_buffer64_t) rtnparm;
+      text like(r5_var_buffer64_t) options(*VARSIZE) const;
+      filter_handler like(r5_proc_pointer_t) value;
+   end-pi;
+
+   dcl-pr filter_event like(r5_boolean_t) extproc(filter_handler);
+      char like(r5_char_t) value;
+   end-pr;
+
+   dcl-s result like(text);
+   dcl-s pos like(r5_int_t);
+   dcl-s char like(r5_char_t);
+
+    for pos = 1 to %len(text);
+       char = %subst(text: pos: 1);
+       if filter_event(char);
+          result += char;
+       endif;
+    endfor;
+    return result;
 end-proc;
 
 
