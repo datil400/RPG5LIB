@@ -18,7 +18,7 @@ ctl-opt bnddir('RPG5LIB');
 
 dcl-c LF  X'25';
 
-dcl-s texto1 varchar(4096) inz('-
+dcl-s t1 varchar(4096) inz('-
   El   orden de las reglas no tiene importancia salvo para determinar la prede-
 terminada,    es decir, el objetivo que make construirá si no se le especifica -
 otro en la línea de órdenes. Esta regla predeterminada es la primera que -
@@ -28,7 +28,7 @@ encargada de compilar el programa entero, o todos los programas que se -
 describan.'
 );
 
-dcl-s texto2 varchar(4096) inz('-
+dcl-s t2 varchar(4096) inz('-
   Por ejemplo, supongamos que se va a aprovechar parte del editor del ejem-
 plo anterior para hacer un programa que nos permita ver el contenido de un -
 fichero; sea view el nombre de tal programa. Para que al dar la orden make sin -
@@ -37,7 +37,7 @@ primera regla una cuyo objetivo dependa de los dos. Es costumbre llamar a tal -
 regla all («todo», en inglés). Así, la primera regla sería simplemente:'
 );
 
-dcl-s texto varchar(4096);
+dcl-s text varchar(4096);
 
 
 dcl-pi R5WW02;
@@ -46,12 +46,12 @@ end-pi;
 
 *inLR = *ON;
 
-texto = texto1 + LF + texto2;
+text = t1 + LF + t2;
 
 r5_joblog('WORD WRAP EXAMPLE : WIDTH = %s': %char(width));
 r5_joblog('.');
 r5_joblog('--- JUSTIFIED TEXT ---');
-r5_word_wrap(*NULL: texto: width: %paddr(justify): LF);
+r5_word_wrap(*NULL: text: width: %paddr(justify): LF);
 return;
 
 
@@ -70,7 +70,7 @@ dcl-proc justify;
    end-pi;
 
    dcl-s work_line like(line);
-   dcl-s spaces like(r5_int_t);
+   dcl-s remaining like(r5_int_t); // Espacios restantes
    dcl-s s like(r5_int_t);
    dcl-s i like(r5_int_t);
 
@@ -103,12 +103,15 @@ dcl-proc justify;
    words.nbr_of_spaces = words.nbr_of_words - 1;
    %subarr(words.spaces: 1: words.nbr_of_spaces) = 1 + ((width - %len(line)) / words.nbr_of_spaces);
 
-   // Espacios en blanco necesarios para terminar de justificar el texto
-   spaces = width - %len(line) - (%xfoot(words.spaces) - words.nbr_of_spaces);
-   for s = 1 to spaces;
+   // Repartir los espacios en blanco restantes para terminar de justificar el texto
+
+   remaining = width - %len(line) - (%xfoot(words.spaces) - words.nbr_of_spaces);
+   for s = 1 to remaining;
       i = r5_random_number(words.nbr_of_spaces: 1);
       words.spaces(i) += 1;
    endfor;
+
+   // Preparar la línea justificada
 
    work_line = '';
    for i = 1 to words.nbr_of_spaces;

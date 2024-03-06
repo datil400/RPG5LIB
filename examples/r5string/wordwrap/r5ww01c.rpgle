@@ -18,7 +18,7 @@ ctl-opt bnddir('RPG5LIB');
 
 dcl-c LF  X'25';
 
-dcl-s texto1 varchar(4096) inz('-
+dcl-s p1 varchar(4096) inz('-
   El   orden de las reglas no tiene importancia salvo para determinar la prede-
 terminada,    es decir, el objetivo que make construirá si no se le especifica -
 otro en la línea de órdenes. Esta regla predeterminada es la primera que -
@@ -28,7 +28,7 @@ encargada de compilar el programa entero, o todos los programas que se -
 describan.'
 );
 
-dcl-s texto2 varchar(4096) inz('-
+dcl-s p2 varchar(4096) inz('-
   Por ejemplo, supongamos que se va a aprovechar parte del editor del ejem-
 plo anterior para hacer un programa que nos permita ver el contenido de un -
 fichero; sea view el nombre de tal programa. Para que al dar la orden make sin -
@@ -37,7 +37,7 @@ primera regla una cuyo objetivo dependa de los dos. Es costumbre llamar a tal -
 regla all («todo», en inglés). Así, la primera regla sería simplemente:'
 );
 
-dcl-s texto varchar(4096);
+dcl-s text varchar(4096);
 
 
 dcl-pi R5WW01C;
@@ -46,27 +46,28 @@ end-pi;
 
 *inLR = *ON;
 
-texto = texto1 + LF + texto2;
+text = p1 + LF + p2;
 
+r5_joblog('.');
 r5_joblog('WORD WRAP EXAMPLE : WIDTH = %s': %char(width));
 r5_joblog('.');
-r5_joblog('--- AJUSTE SIN SALTO DE PÁRRAFO ---');
-r5_word_wrap(*NULL: texto: width: %paddr(alinear_izquierda));
+r5_joblog('--- LEFT ALIGN WITHOUT LINE FEED ---');
+r5_word_wrap(*NULL: text: width: %paddr(left_align));
 r5_joblog('.');
-r5_joblog('--- AJUSTES CON SALTOS DE PARRAFO ---');
+r5_joblog('--- ALIGN WITH LINE FEED ---');
 r5_joblog('.');
-r5_joblog('--- JUSTIFICADO A LA IZQUIERDA ---');
-r5_word_wrap(*NULL: texto: width: %paddr(alinear_izquierda): LF);
+r5_joblog('--- LEFT ALIGN ---');
+r5_word_wrap(*NULL: text: width: %paddr(left_align): LF);
 r5_joblog('.');
-r5_joblog('--- JUSTIFICADO A LA DERECHA ---');
-r5_word_wrap(*NULL: texto: width: %paddr(alinear_derecha): LF);
+r5_joblog('--- RIGTH ALIGN ---');
+r5_word_wrap(*NULL: text: width: %paddr(right_align): LF);
 r5_joblog('.');
-r5_joblog('--- JUSTIFICADO AL CENTRO ---');
-r5_word_wrap(*NULL: texto: width: %paddr(alinear_al_centro): LF);
+r5_joblog('--- CENTER ---');
+r5_word_wrap(*NULL: text: width: %paddr(center): LF);
 return;
 
 
-dcl-proc alinear_izquierda;
+dcl-proc left_align;
 
    dcl-pi *N;
       context like(r5_pointer_t) value;
@@ -82,7 +83,7 @@ dcl-proc alinear_izquierda;
 end-proc;
 
 
-dcl-proc alinear_derecha;
+dcl-proc right_align;
 
    dcl-pi *N;
       context like(r5_pointer_t) value;
@@ -101,7 +102,7 @@ dcl-proc alinear_derecha;
 end-proc;
 
 
-dcl-proc alinear_al_centro;
+dcl-proc center;
 
    dcl-pi *N;
       context like(r5_pointer_t) value;
