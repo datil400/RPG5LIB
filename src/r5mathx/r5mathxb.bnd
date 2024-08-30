@@ -1,0 +1,11 @@
+strpgmexp pgmlvl(*CURRENT) signature('R5MATHX        ')
+   export symbol('r5_round')
+   export symbol('r5_truncate')
+   export symbol('r5_ceil')
+   export symbol('r5_floor')
+   export symbol('r5_remainder')
+   export symbol('r5_modulo')
+   export symbol('r5_upper_multiple')
+   export symbol('r5_lower_multiple')
+endpgmexp
+
