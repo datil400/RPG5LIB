@@ -155,7 +155,8 @@ DCL        VAR(&OVRSRCFILE) TYPE(*CHAR) LEN(10)
    CRTSRVPGM  SRVPGM(&LIB/R5STRING) MODULE(QTEMP/STRING +
               QTEMP/WORDWRAP) EXPORT(*SRCFILE) +
               SRCFILE(&LIB/&SRVSRC) SRCMBR(R5STRINGB) +
-              TEXT(&TEXT) OPTION(*DUPPROC)
+              TEXT(&TEXT) +
+              ACTGRP(RPG5LIB) OPTION(*DUPPROC)
    SNDPGMMSG  MSG('Se ha creado el programa de servicio R5STRING.') +
               MSGTYPE(*COMP)
 

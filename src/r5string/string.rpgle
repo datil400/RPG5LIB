@@ -69,28 +69,6 @@ dcl-proc r5_left_pad export;
 end-proc;
 
 
-//  Extrae una subcadena comenzando por la izquierda.
-//
-//  Si 'length' es cero, devuelve una cadena vacía.
-//
-//  Si 'length' excede la longitud de la cadena, devuelve la
-//  cadena completa.
-
-dcl-proc r5_left export;
-
-   dcl-pi *N  like(r5_string_t);
-      string like(r5_string_t) options(*VARSIZE) const;
-      length like(r5_int_t) const;
-   end-pi;
-
-   if  length <= 0 or %len(string) = 0;
-      return  '';
-   endif;
-
-   return  %subst(string: 1: %int(r5_min(%len(string): length)));
-end-proc;
-
-
 //  Devuelve la cadena 'str' con un relleno por la derecha. Se conservan
 //  los espacios en blanco iniciales y finales que pudiera contener 'str'.
 //  El ancho de la cadena resultante se ajusta a 'length'.
@@ -127,6 +105,28 @@ dcl-proc r5_right_pad export;
       result = str + r5_right(r5_left(result: length): length - %len(str));
    endif;
    return result;
+end-proc;
+
+
+//  Extrae una subcadena comenzando por la izquierda.
+//
+//  Si 'length' es cero, devuelve una cadena vacía.
+//
+//  Si 'length' excede la longitud de la cadena, devuelve la
+//  cadena completa.
+
+dcl-proc r5_left export;
+
+   dcl-pi *N  like(r5_string_t);
+      string like(r5_string_t) options(*VARSIZE) const;
+      length like(r5_int_t) const;
+   end-pi;
+
+   if  length <= 0 or %len(string) = 0;
+      return  '';
+   endif;
+
+   return  %subst(string: 1: %int(r5_min(%len(string): length)));
 end-proc;
 
 
