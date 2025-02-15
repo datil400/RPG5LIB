@@ -3,7 +3,7 @@
 /IF DEFINED(R5_MATH_H)
 /EOF
 /ENDIF
-/DEFINE R5_MATHG_H
+/DEFINE R5_MATH_H
 
 //  Package : RPG5LIB
 //  SrvPgm  : R5UTILS
@@ -64,5 +64,13 @@ end-pr;
 
 dcl-pr r5_cube_root like(r5_double_t) extproc(*DCLCASE);
    value like(r5_double_t) const;
+end-pr;
+
+dcl-pr r5_sign like(r5_int_t) extproc(*DCLCASE);
+   value like(r5_long_packed_t) const;
+end-pr;
+
+dcl-pr r5_opposite_sign like(r5_int_t) extproc(*DCLCASE);
+   value like(r5_long_packed_t) const;
 end-pr;
 

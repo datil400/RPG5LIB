@@ -27,4 +27,6 @@ strpgmexp pgmlvl(*CURRENT) signature('R5UTILS        ')
    export symbol('r5_in_date')
    export symbol('r5_in_time')
    export symbol('r5_in_ts')
+   export symbol('r5_sign')
+   export symbol('r5_opposite_sign')
 endpgmexp

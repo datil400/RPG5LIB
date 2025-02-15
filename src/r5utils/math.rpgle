@@ -6,7 +6,7 @@
 //
 //  Mathematical and numeric utilities
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : April 2022
 //
 //  Compiling : R5UTILSI
@@ -22,7 +22,7 @@ ctl-opt option(*SRCSTMT: *NODEBUGIO);
 /COPY RPG5LIB,math_h
 
 
-//  El valor más pequeño de la lista.
+//  El valor mï¿½s pequeï¿½o de la lista.
 //
 //  Usar %MIN a partir de 7.2 TR6, 7.3 TR2
 
@@ -206,10 +206,10 @@ dcl-proc r5_max export;
 end-proc;
 
 
-//  Genera un número aleatorio dentro de un rango
+//  Genera un nï¿½mero aleatorio dentro de un rango
 //
-//  'high_nbr' es el límite superior.
-//  'low_nbr' es el límite inferior. Cero si no se indica.
+//  'high_nbr' es el lï¿½mite superior.
+//  'low_nbr' es el lï¿½mite inferior. Cero si no se indica.
 
 dcl-proc r5_random_number export;
 
@@ -218,11 +218,11 @@ dcl-proc r5_random_number export;
       o_low_nbr like(r5_int_t) options(*NOPASS) const;
    end-pi;
 
-   //  'seed' es una semilla utilizada en la generación del número
+   //  'seed' es una semilla utilizada en la generaciï¿½n del nï¿½mero
    //  aleatorio. En la primera llamada su valor es cero y el
-   //  generador de números toma la fecha y hora actual para generar
-   //  una. La función CEERAN0 actualiza el valor de la semilla
-   //  después de cada llamada.
+   //  generador de nï¿½meros toma la fecha y hora actual para generar
+   //  una. La funciï¿½n CEERAN0 actualiza el valor de la semilla
+   //  despuï¿½s de cada llamada.
    dcl-s seed int(10) inz(0) static;
    dcl-s rand like(r5_double_t) inz(0);
    dcl-s low_nbr like(o_low_nbr) inz(0);
@@ -252,3 +252,36 @@ dcl-proc r5_cube_root export;
    endif;
 end-proc;
 
+
+dcl-proc r5_opposite_sign export;
+
+   dcl-pi *N like(r5_int_t);
+      value like(r5_long_packed_t) const;
+   end-pi;
+
+   return r5_sign(value) * -1;
+end-proc;
+
+
+//  Devuelve el signo de un nï¿½mero.
+//
+//  Si nï¿½mero es negativo, devuelve -1
+//  Si nï¿½mero es positivo, devuelve 1
+//  Si nï¿½mero es cero, devuelve 0
+//
+//  Uso:  eval value = price * qty * (- r5_sign(qty));
+
+dcl-proc r5_sign export;
+
+   dcl-pi *N like(r5_int_t);
+      value like(r5_long_packed_t) const;
+   end-pi;
+
+   if value > 0;
+      return 1;
+   elseif value < 0;
+      return -1;
+   else;
+      return 0;
+   endif;
+end-proc;

@@ -6,7 +6,7 @@
 //
 //  API error code utilities
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : June 2021
 //
 //  Compiling : R5UTILSI

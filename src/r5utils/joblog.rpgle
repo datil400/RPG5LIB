@@ -6,7 +6,7 @@
 //
 //  Job log utilities
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : May 2021
 //
 //  Compiling : R5UTILSI

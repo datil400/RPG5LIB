@@ -6,7 +6,7 @@
 //
 //  C Standard Library error handling.
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : June 2021
 //
 //  Compiling : R5UTILSI
@@ -16,6 +16,9 @@
 //    Funciones relacionadas con la gestión de errores de la biblioteca
 //    estándar de C.
 //
+//  Deployment
+//
+//    Siempre ACTGRP(*CALLER)
 
 ctl-opt nomain;
 ctl-opt option(*SRCSTMT: *NODEBUGIO);

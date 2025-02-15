@@ -6,7 +6,7 @@
 //
 //  Family of 'iif' functions
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : April 2022
 //
 //  Compiling : R5UTILSI

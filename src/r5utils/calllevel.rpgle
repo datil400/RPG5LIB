@@ -6,14 +6,14 @@
 //
 //  Call level utilities
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : September 2021
 //
 //  Compiling : R5UTILSI
 //
 //  Comments
 //
-//    Permite consultar los niveles de llamada del trabajo actual sin
+//    Permite consultar cada nivel de invocación del trabajo actual sin
 //    hacer uso de la API Retrive Call Stack (QWVRCSTK) o de la función
 //    de tabla SQL STACK_INFO.
 

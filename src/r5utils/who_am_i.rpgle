@@ -6,7 +6,7 @@
 //
 //  who_am_i utility.
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : September 2021
 //
 //  Compiling : R5UTILSI

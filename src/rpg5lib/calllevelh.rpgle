@@ -21,6 +21,11 @@
 
 /COPY RPG5LIB,types_h
 
+dcl-c R5_PGMTYPE_NON_BOUND_PROGRAM  x'00';
+dcl-c R5_PGMTYPE_BOUND_PROGRAM  x'01';
+dcl-c R5_PGMTYPE_BOUND_SERVICE_PROGRAM  x'02';
+dcl-c R5_PGMTYPE_JAVA_PROGRAM  x'04';
+
 dcl-ds r5_call_level_info_t qualified template;
    program_type char(1);
    program_name like(r5_program_name_t);
