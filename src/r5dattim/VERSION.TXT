@@ -1,2 +1,8 @@
-2.0_final
-20230529
+2.1_rc1
+20251215
+-- LOG --
+Cambio a grupo de activación 'RPG5LIB'
+Control de errores en todos los "límites de control' del grupo de activación
+Sustituir 'clean_string' por 'r5_clean_text_simple'
+Incluir r5_char_to_timestamp
+Incluir r5_timestamp_to_char

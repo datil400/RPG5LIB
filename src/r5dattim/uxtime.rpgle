@@ -6,7 +6,7 @@
 //
 //  Unix time functions.
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : November 2022
 //
 //  Compiling : R5DATTIMI
@@ -119,14 +119,14 @@ dcl-proc r5_timestamp_to_unix_time export;
    char_timestamp = %subst(%char(timestamp: *ISO): 1: 19);
 
    if strptime(char_timestamp: '%Y-%m-%d-%H.%M.%S': tm) = *NULL;
-      exception = errno_to_exception(r5_errno());
+      exception = r5_exception_new_from_errno(r5_errno());
       r5_throw(exception);
    endif;
 
    unix_time = mktime(tm);
    if unix_time = -1;
       // No se admiten fechas anteriores a 1970-01-01
-      exception = errno_to_exception(r5_errno());
+      exception = r5_exception_new_from_errno(r5_errno());
       r5_throw(exception);
    endif;
 
@@ -153,7 +153,7 @@ dcl-proc r5_unix_time_to_timestamp export;
 
    tm_ptr = localtime(unix_time);
    if strftime(char_timestamp: %size(char_timestamp): '%Y-%m-%d-%H.%M.%S.000000': tm) = 0;
-      exception = errno_to_exception(r5_errno());
+      exception = r5_exception_new_from_errno(r5_errno());
       r5_throw(exception);
    endif;
 
@@ -171,45 +171,9 @@ dcl-proc r5_current_utc_unix_time export;
 
    unix_time = time(*OMIT);
    if unix_time = -1;
-      exception = errno_to_exception(r5_errno());
+      exception = r5_exception_new_from_errno(r5_errno());
       r5_throw(exception);
    endif;
 
    return unix_time;
 end-proc;
-
-
-// MOVER AL MÓDULO ERRNO EN R5UTILS
-
-dcl-proc errno_to_exception;
-
-   dcl-pi *N like(r5_object_t) extproc(*DCLCASE);
-      errcode like(r5_int_t) const;
-   end-pi;
-
-   dcl-s ex like(r5_object_t);
-
-   ex = r5_exception_new(errno_to_msg_id(errcode): 'QCPFMSG   *LIBL');
-
-   return ex;
-end-proc;
-
-
-// MOVER AL MÓDULO ERRNO EN R5UTILS
-
-dcl-proc errno_to_msg_id;
-
-   dcl-pi *N like(r5_message_id_t) extproc(*DCLCASE);
-      errcode like(r5_int_t) const;
-   end-pi;
-
-   dcl-s msg_id like(r5_message_id_t);
-   dcl-s id varchar(4);
-
-
-   id = %trim(%editc((errcode): 'Z'));
-   msg_id = 'CPE' + %subst('0000' + id: %len(id) + 1: 4);
-
-   return msg_id;
-end-proc;
-

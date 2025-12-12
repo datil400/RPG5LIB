@@ -116,7 +116,8 @@ DCL        VAR(&OVRSRCFILE) TYPE(*CHAR) LEN(10)
    CRTSRVPGM  SRVPGM(&LIB/R5DATTIM) +
               MODULE(QTEMP/DATES QTEMP/TIME QTEMP/UXTIME) +
               SRCFILE(&LIB/&SRVSRC) SRCMBR(R5DATTIMB) +
-              TEXT(&TEXT) OPTION(*DUPPROC)
+              TEXT(&TEXT) +
+              ACTGRP(RPG5LIB) OPTION(*DUPPROC)
 
    SNDPGMMSG  MSG('Se ha creado el programa de servicio R5DATTIM.') +
               MSGTYPE(*COMP)

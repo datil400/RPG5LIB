@@ -41,5 +41,7 @@ strpgmexp pgmlvl(*CURRENT) signature('R5DATTIM        ')
    export symbol('r5_timestamp_to_unix_time')
    export symbol('r5_unix_time_to_timestamp')
    export symbol('r5_check_char_date')
+   export symbol('r5_timestamp_to_char')
+   export symbol('r5_char_to_timestamp')
 endpgmexp
 

@@ -5,8 +5,8 @@
       *
       *  Time and timestamp functions collection.
       *
-      *  Author : Javier Mora
-      *  Date:
+      *  Author : datil400@gmail.com
+      *  Date: October 2022
       *
       *  Compiling : R5DATTIMI
       *
@@ -20,6 +20,7 @@
       /COPY API,CEEDATE_H
       /COPY API,StdC_H
 
+      /COPY RPG5LIB,excmgr_h
       /COPY RPG5LIB,dates_h
       /COPY RPG5LIB,time_h
 
@@ -55,7 +56,14 @@
      D                 PI                  like(r5_time_t)
      D   dec_time                          like(r5_dec_time_t) const
 
-       return %time(%editc(dec_time: 'X'): *ISO0);
+     D time            S                   like(r5_time_t)
+
+       monitor;
+          time = %time(%editc(dec_time: 'X'): *ISO0);
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return time;
 
      P r5_dec_to_time  E
 
@@ -83,7 +91,11 @@
           seconds = o_seconds;
        endif;
 
-       time = %time((hours*100 + minutes)*100 + seconds: *ISO);
+       monitor;
+          time = %time((hours*100 + minutes)*100 + seconds: *ISO);
+       on-error;
+          r5_resend_exception();
+       endmon;
        return time;
 
      P r5_make_time    E
@@ -114,7 +126,14 @@
      D   dec_format                        like(r5_date_format_t) const
      D                                     options(*TRIM)
 
-       return r5_date_to_dec(%date(timestamp): dec_format);
+     D dec_date        S                   like(r5_dec_date_t)
+
+       monitor;
+          dec_date = r5_date_to_dec(%date(timestamp): dec_format);
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return dec_date;
 
      P r5_timestamp_to_decdate...
      P                 E
@@ -150,9 +169,173 @@
      D   dec_format                        like(r5_date_format_t) const
      D                                     options(*TRIM)
 
-       return %timestamp(r5_dec_to_date(dec_date: dec_format));
+     D time_stamp      S                   like(r5_time_stamp_t)
+
+       monitor;
+          time_stamp = %timestamp(r5_dec_to_date(dec_date: dec_format));
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return time_stamp;
 
      P r5_decdate_to_timestamp...
+     P                 E
+
+
+    /**
+     *  Convierte una marca de fecha y hora en una cadena de caracteres.
+     *
+     *  'char_format' define el formato de la marca de fecha y hora
+     *  resultante.
+     *
+     *    Formatos válidos:
+     *       Y=Año; M=Mes; D=Día
+     *       HH=Horas; MI=Minutos; SS=Segundos; 999=Milésimas
+     *
+     *       Cualquier combinación válida según CEESECS. Más información
+     *       en:
+     *
+     *       https://www.ibm.com/docs/en/i/7.6.0?topic=ssw_ibm_i_76/apis/CEEDAYS.html#TBLPICXMP
+     *
+     * -- NO IMPLEMENTADO --
+     *    Los siguientes formatos incluirán separadores por defecto:
+     *     *ISO equivale a YYYY-MM-DD-HH.MI.SS.999
+     * -- FIN NO IMPLEMENTADO --
+     *
+     *  Al utilizar las APIs CEE de fecha y hora, la precisión máxima
+     *  será de milisegundos.
+     *
+     *  Excepciones:
+     *
+     *  CEE2518  La especificación de la serie de imagen no es válida.
+     */
+
+     P r5_timestamp_to_char...
+     P                 B                   export
+     D                 PI                  like(r5_char_timestamp_t)
+     D   timestamp                         like(r5_time_stamp_t) const
+     D   char_format                       like(r5_timestamp_format_t) const
+     D                                     options(*TRIM)
+
+     D result          S                   like(r5_char_timestamp_t)
+     D IN_FORMAT       C                   'YYYY-MM-DD-HH.MI.SS.999'
+
+       monitor;
+          result = convert_char_time(%char(timestamp): IN_FORMAT: char_format);
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return result;
+
+     P r5_timestamp_to_char...
+     P                 E
+
+
+    /**
+     *  Convierte una cadena de caracteres que representa una marca de
+     *  fecha y hora en el tipo de dato nativo de RPG.
+     *
+     *  'char_ts' es la cadena de caracteres con la marca de fecha y
+     *   hora. Debe ser válida.
+     *
+     *  'char_format' define el formato de 'char_ts'.
+     *
+     *    Formatos válidos:
+     *       Y=Año; M=Mes; D=Día
+     *       HH=Horas; MI=Minutos; SS=Segundos; 999=Milésimas
+     *
+     *       Cualquier combinación válida según CEESECS. Más información
+     *       en:
+     *
+     *       https://www.ibm.com/docs/en/i/7.6.0?topic=ssw_ibm_i_76/apis/CEEDAYS.html#TBLPICXMP
+     *
+     * -- NO IMPLEMENTADO --
+     *    Los siguientes formatos incluirán separadores por defecto:
+     *     *ISO equivale a YYYY-MM-DD-HH.MI.SS.999
+     * -- FIN NO IMPLEMENTADO --
+     *
+     *  Al utilizar las APIs CEE de fecha y hora, la precisión máxima
+     *  será de milisegundos.
+     *
+     *  Excepciones:
+     *
+     *  CEE2508  El valor del día no es válido.
+     *  CEE2517  El valor del mes no es válido.
+     *  CEE2521  El valor del año no es válido.
+     *  CEE2518  La especificación de la serie de imagen no es válida.
+     */
+
+     P r5_char_to_timestamp...
+     P                 B                   export
+     D                 PI                  like(r5_time_stamp_t)
+     D   char_ts                           like(r5_long_char_timestamp_t) const
+     D                                     options(*TRIM)
+     D   char_format                       like(r5_timestamp_format_t) const
+     D                                     options(*TRIM)
+
+     D result          S               Z
+     D OUT_FORMAT      C                   'YYYY-MM-DD-HH.MI.SS.999'
+
+       monitor;
+          result = %timestamp( convert_char_time( char_ts: char_format
+                                                : OUT_FORMAT)
+                             : *ISO: 3
+                             );
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return result;
+
+     P r5_char_to_timestamp...
+     P                 E
+
+
+    /**
+     *  Convierte el formato de una marca de fecha y hora almacenada
+     *  en un campo alfanumérico.
+     *
+     *  'char_ts' es la cadena que se quiere transformar a otro
+     *  formato. Debe ser una marca de fecha y hora válida.
+     *
+     *  'char_format' define el formato CEE de la marca de fecha y hora
+     *   a convertir.
+     *
+     *     ACTUALMENTE NO ESTÁ IMPLEMENTADO EL USO DE LA MÁSCARA '*ISO'.
+     *
+     *  'out_format' define el formato CEE de la marca de fecha y hora
+     *  resultante de la conversión.
+     */
+
+     P convert_char_time...
+     P                 B
+     D                 PI                  like(r5_long_char_date_t)
+     D   char_ts                           like(r5_long_char_timestamp_t) const
+     D                                     options(*TRIM)
+     D   char_format                       like(r5_timestamp_format_t) const
+     D                                     options(*TRIM)
+     D   out_format                        like(r5_timestamp_format_t) const
+     D                                     options(*TRIM)
+
+     D result          S            128A
+     D seconds         S                   like(r5_double_t)
+     D exception       S                   like(r5_object_t)
+
+       if char_format = '' or out_format = '';
+          exception = r5_exception_new('CEE2518': 'QCEEMSG');
+          r5_throw(exception);
+       endif;
+
+       monitor;
+          CEESECS(char_ts: char_format: seconds: *OMIT);
+          CEEDATM(seconds: out_format: result: *OMIT);
+       on-error;
+          r5_catch();
+          r5_throw();
+       endmon;
+       return %trim(result);
+
+
+     P convert_char_time...
      P                 E
 
 

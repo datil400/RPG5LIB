@@ -5,7 +5,7 @@
       *
       *  Date functions collection.
       *
-      *  Author : Javier Mora
+      *  Author : datil400@gmail.com
       *  Date: June 2022
       *
       *  Compiling : R5DATTIMI
@@ -140,8 +140,12 @@
           separator = o_separator;
        endif;
 
-       date = r5_dec_to_date(dec_date: dec_format);
-       char_date = r5_date_to_char(date: char_format: separator);
+       monitor;
+          date = r5_dec_to_date(dec_date: dec_format);
+          char_date = r5_date_to_char(date: char_format: separator);
+       on-error;
+          r5_resend_exception();
+       endmon;
        return char_date;
 
      P r5_decdate_to_char...
@@ -212,11 +216,15 @@
      D in_date         S                   like(r5_char_date_t)
      D out_date        S                   like(r5_char_date_t)
 
-       cee_format = find_cee_date_format(dec_format);
-       in_date = %editc(dec_date: 'X');
-       in_date = r5_right(in_date: %len(cee_format));
-       out_date = convert_char_date(in_date: cee_format: 'YYYY-MM-DD');
-       date = %date(out_date: *ISO);
+       monitor;
+          cee_format = find_cee_date_format(dec_format);
+          in_date = %editc(dec_date: 'X');
+          in_date = r5_right(in_date: %len(cee_format));
+          out_date = convert_char_date(in_date: cee_format: 'YYYY-MM-DD');
+          date = %date(out_date: *ISO);
+       on-error;
+          r5_resend_exception();
+       endmon;
        return date;
 
      P r5_dec_to_date...
@@ -256,10 +264,14 @@
      D in_date         S                   like(r5_char_date_t)
      D out_date        S                   like(r5_char_date_t)
 
-       cee_format = find_cee_date_format(dec_format);
-       in_date = %char(date: *ISO);
-       out_date = convert_char_date(in_date: 'YYYY-MM-DD': cee_format);
-       dec_date = %dec(out_date: dec_date_length: 0);
+       monitor;
+          cee_format = find_cee_date_format(dec_format);
+          in_date = %char(date: *ISO);
+          out_date = convert_char_date(in_date: 'YYYY-MM-DD': cee_format);
+          dec_date = %dec(out_date: dec_date_length: 0);
+       on-error;
+          r5_resend_exception();
+       endmon;
        return dec_date;
 
      P r5_date_to_dec...
@@ -306,12 +318,13 @@
        out_cee_format = find_cee_date_format(out_format);
 
        select;
+
        // La fecha 00-00-00 es incorrecta pero se permite cuando la
        // variable es numérica e indica el valor más pequeño de una
        // fecha.
 
        when dec_date = 0;
-          out_date = '0';
+          out_dec_date = 0;
 
        // Las fechas 99-99-99 son incorrectas pero se permiten cuando
        // la variable es numérica e indican el valor más grande de
@@ -321,9 +334,9 @@
             (%len(out_cee_format) = 6 or %len(out_cee_format) = 8);
 
           if %len(out_cee_format) = 6;
-             out_date = '999999';
+             out_dec_date = 999999;
           else;
-             out_date = '99999999';
+             out_dec_date = 99999999;
           endif;
 
        // Si la fecha a covertir no es un valor especial (ver anteriores)
@@ -331,14 +344,19 @@
        // indicados por los formatos.
 
        other;
-          in_date = %trim(%editc(dec_date: 'X'));
-          in_date = r5_right(in_date: %len(in_cee_format));
-          out_date =
-                   convert_char_date(in_date: in_cee_format: out_cee_format);
+          monitor;
+             in_date = %trim(%editc(dec_date: 'X'));
+             in_date = r5_right(in_date: %len(in_cee_format));
+             out_date = convert_char_date( in_date: in_cee_format
+                                         : out_cee_format
+                                         );
+             out_dec_date = %dec(%trim(out_date): out_dec_date_length: 0);
+          on-error;
+             r5_resend_exception();
+          endmon;
        endsl;
 
-       out_dec_date = %dec(%trim(out_date): out_dec_date_length: 0);
-       return  out_dec_date;
+       return out_dec_date;
 
      P r5_convert_decdate...
      P                 E
@@ -422,11 +440,15 @@
           separator = o_separator;
        endif;
 
-       r5_verify_date_separator(separator);
-       cee_format = parse_date_format(char_format: separator);
+       monitor;
+          r5_verify_date_separator(separator);
+          cee_format = parse_date_format(char_format: separator);
 
-       in_date = %char(date: *ISO);
-       out_date = convert_char_date(in_date: 'YYYY-MM-DD': cee_format);
+          in_date = %char(date: *ISO);
+          out_date = convert_char_date(in_date: 'YYYY-MM-DD': cee_format);
+       on-error;
+          r5_resend_exception();
+       endmon;
        return out_date;
 
      P r5_date_to_char...
@@ -518,8 +540,12 @@
           dec_format = find_equivalent_date_format(char_format);
        endif;
 
-       date = r5_char_to_date(char_date: char_format: separator);
-       dec_date = r5_date_to_dec(date: dec_format);
+       monitor;
+          date = r5_char_to_date(char_date: char_format: separator);
+          dec_date = r5_date_to_dec(date: dec_format);
+       on-error;
+          r5_resend_exception();
+       endmon;
        return dec_date;
 
      P r5_chardate_to_dec...
@@ -528,7 +554,7 @@
 
     /**
      *  Busca un formato de fecha básico equivalente al formato
-     *  formato de fecha especificado.
+     *  de fecha especificado.
      */
 
      P find_equivalent_date_format...
@@ -548,8 +574,9 @@
              format = long_format;
           endif;
        else;
-          if %len(long_format) <= %size(r5_date_format_t);
-             format = clean_string(long_format: VALID_DATE_SEPARATORS);
+          //if %len(long_format) <= %size(r5_date_format_t);
+          if %len(long_format) <= %len(format: *MAX);
+             format = r5_clean_text(long_format: VALID_DATE_SEPARATORS);
           else;
              format = '';
           endif;
@@ -574,45 +601,6 @@
 
      P r5_check_date_separator...
      P                 E
-
-
-    /**
-     *  Limpia una cadena de caracteres de símbolos extraños.
-     *
-     *  Cuando esta función esté preparada para publicarse habrá que
-     *  trasladarla al módulo 'R5STRING'.
-     *
-     *  Queda pendiente de revisar el parámetro 'symbols' para
-     *  sustituirlo por un puntero a un procedimiento encargado de
-     *  inspeccionar cada carácter de la cadena y que decida si hay
-     *  que eliminarlo o no.
-     *
-     *  Revisar el tamaño del parámetro 'str'.
-     *
-     *  'str' es la cadena de caracters a limpiar.
-     *
-     *  'symbols' es la lista de símbolos a eliminar de la cadena
-     *  de entrada.
-     */
-
-     P clean_string    B
-     D                 PI           128A   varying
-     D   str                        128A   varying const
-     D   symbols                    128A   varying const
-
-     D clean           S                   like(str)
-     D pos             S                   like(r5_int_t)
-     D char            S              1A
-
-       for pos = 1 to %len(str);
-          char = r5_mid(str: pos: 1);
-          if  %check(symbols: char) > 0;
-             clean = clean + char;
-          endif;
-       endfor;
-       return clean;
-
-     P clean_string    E
 
 
     /**
@@ -704,11 +692,15 @@
           separator = o_separator;
        endif;
 
-       r5_verify_date_separator(separator);
-       cee_format = parse_date_format(char_format: separator);
+       monitor;
+          r5_verify_date_separator(separator);
+          cee_format = parse_date_format(char_format: separator);
 
-       out_date = convert_char_date(char_date: cee_format: 'YYYY-MM-DD');
-       date = %date(out_date: *ISO);
+          out_date = convert_char_date(char_date: cee_format: 'YYYY-MM-DD');
+          date = %date(out_date: *ISO);
+       on-error;
+          r5_resend_exception();
+       endmon;
        return date;
 
      P r5_char_to_date...
@@ -1095,6 +1087,7 @@
      D   o_format                          like(r5_long_date_format_t) const
      D                                     options(*TRIM: *NOPASS)
 
+     D result          S                   like(r5_long_char_date_t)
      D date            S                   like(o_date) inz(*SYS)
      D* El formato podría depender del idioma:
      D* Anglosajón
@@ -1113,7 +1106,12 @@
           format = o_format;
        endif;
 
-       return convert_char_date(%char(date: *ISO): 'YYYY-MM-DD': format);
+       monitor;
+          result = convert_char_date(%char(date: *ISO): 'YYYY-MM-DD': format);
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return result;
 
      P r5_date_to_text...
      P                 E
@@ -1132,6 +1130,7 @@
      D   o_format                          like(r5_long_date_format_t) const
      D                                     options(*TRIM: *NOPASS)
 
+     D name            S                   like(r5_long_char_date_t)
      D format          S                   like(o_format)
      D                                     inz('Wwwwwwwwwwwwwwwwwwwz')
 
@@ -1139,7 +1138,12 @@
           format = o_format;
        endif;
 
-       return convert_char_date(%char(date: *ISO): 'YYYY-MM-DD': format);
+       monitor;
+          name = convert_char_date(%char(date: *ISO): 'YYYY-MM-DD': format);
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return name;
 
      P r5_day_name     E
 
@@ -1157,6 +1161,7 @@
      D   o_format                          like(r5_long_date_format_t) const
      D                                     options(*TRIM: *NOPASS)
 
+     D name            S                   like(r5_long_char_date_t)
      D format          S                   like(o_format)
      D                                     inz( 'Mmmmmmmmmmmmmmmmmmmz' )
 
@@ -1164,7 +1169,12 @@
           format = o_format;
        endif;
 
-       return convert_char_date(%char(date: *ISO): 'YYYY-MM-DD': format);
+       monitor;
+          name = convert_char_date(%char(date: *ISO): 'YYYY-MM-DD': format);
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return name;
 
      P r5_month_name   E
 
@@ -1231,13 +1241,19 @@
      D   date                              like(r5_date_t) const
      D   year                         4P 0 const
 
+     D result          S                   like(r5_date_t)
      D month           S                   like(r5_short_t)
      D day             S                   like(r5_short_t)
 
        month = %subdt(date: *MONTHS);
        day   = %subdt(date: *DAYS);
 
-       return r5_make_date(year: month: day);
+       monitor;
+          result = r5_make_date(year: month: day);
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return result;
 
      P r5_set_year_of_date...
      P                 E
@@ -1260,13 +1276,19 @@
      D   date                              like(r5_date_t) const
      D   month                        2P 0 const
 
+     D result          S                   like(r5_date_t)
      D year            S                   like(r5_short_t)
      D day             S                   like(r5_short_t)
 
        year = %subdt(date: *YEARS);
        day  = %subdt(date: *DAYS);
 
-       return r5_make_date(year: month: day);
+       monitor;
+          result = r5_make_date(year: month: day);
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return result;
 
      P r5_set_month_of_date...
      P                 E
@@ -1289,13 +1311,19 @@
      D   date                              like(r5_date_t) const
      D   day                          2P 0 const
 
+     D result          S                   like(r5_date_t)
      D year            S                   like(r5_short_t)
      D month           S                   like(r5_short_t)
 
        year  = %subdt(date: *YEARS);
        month = %subdt(date: *MONTHS);
 
-       return r5_make_date(year: month: day);
+       monitor;
+          result = r5_make_date(year: month: day);
+       on-error;
+          r5_resend_exception();
+       endmon;
+       return result;
 
      P r5_set_day_of_date...
      P                 E
@@ -1394,7 +1422,11 @@
           day = o_day;
        endif;
 
-       date = %date((year*100 + month)*100 + day: *ISO);
+       monitor;
+          date = %date((year*100 + month)*100 + day: *ISO);
+       on-error;
+          r5_resend_exception();
+       endmon;
        return date;
 
      P r5_make_date    E
@@ -1456,9 +1488,13 @@
           criteria = o_criteria;
        endif;
 
-       //verify_week_criteria(criteria);
+       monitor;
+          //verify_week_criteria(criteria);
 
-       day_of_week = day_of_week_iso(date);
+          day_of_week = day_of_week_iso(date);
+       on-error;
+          r5_resend_exception();
+       endmon;
        return day_of_week;
 
      P r5_day_of_week...
