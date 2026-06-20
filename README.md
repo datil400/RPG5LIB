@@ -1,2 +1,1 @@
-# RPG5LIB
-Capacidades extra para ILE RPG
+# RPG5LIB - Extensiones para ILE RPG (ILE RPG extension)
