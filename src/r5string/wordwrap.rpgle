@@ -24,6 +24,7 @@ ctl-opt bnddir('RPG5LIB');
 /COPY RPG5LIB,calllevelh
 /COPY RPG5LIB,wordwrap_h
 
+
 dcl-ds rp50100_msgdta_t qualified template;
    width int(10);
 end-ds;
@@ -110,14 +111,14 @@ dcl-proc r5_word_wrap export;
    dcl-s is_end_of_text like(r5_boolean_t);
 
 
-   if width <= 0;
-      exception = R5_INVALID_MAX_WIDTH_EXCEPTION(width);
+   if width <= 1;
+      exception = INVALID_MAX_WIDTH_EXCEPTION(width);
       r5_throw(exception);
    endif;
 
    if line_handler = *NULL;
       r5_caller(this);
-      exception = R5_EXPECTED_CALLBACK_EXCEPTION(this);
+      exception = EXPECTED_CALLBACK_EXCEPTION(this);
       r5_throw(exception);
    endif;
 
@@ -156,7 +157,7 @@ dcl-proc r5_word_wrap export;
       work_text += WORD_SEP;
    endif;
 
-   // El texto convertido (work_text) se recorre palabra a palabra.
+   // El texto preformateado (work_text) se recorre palabra a palabra.
    // 'begin' siempre apunta a primer carácter de la palabra,
    // independientemente de los espacios en blanco que le precedan.
    // 'end' se sitúa siempre en el primer espacio en blanco después
@@ -207,11 +208,15 @@ dcl-proc r5_word_wrap export;
          is_end_of_text = (end = %len(work_text));
 
          line_number += 1;
-         process_line_event( context
-                           : %trim(line): line_number: width
-                           : is_end_of_paragraph
-                           : is_end_of_text
-                           );
+         monitor;
+            process_line_event( context
+                              : %trim(line): line_number: width
+                              : is_end_of_paragraph
+                              : is_end_of_text
+                              );
+         on-error;
+            r5_resend_exception();
+         endmon;
 
          line = '';
       endif;
@@ -223,17 +228,21 @@ dcl-proc r5_word_wrap export;
 
    if %len(line) > 0;
       line_number += 1;
-      process_line_event( context
-                        : %trim(line): line_number: width
-                        : *ON: *ON
-                        );
+      monitor;
+         process_line_event( context
+                           : %trim(line): line_number: width
+                           : *ON: *ON
+                           );
+      on-error;
+         r5_resend_exception();
+      endmon;
    endif;
 
    return;
 end-proc;
 
 
-dcl-proc R5_INVALID_MAX_WIDTH_EXCEPTION;
+dcl-proc INVALID_MAX_WIDTH_EXCEPTION;
 
    dcl-pi *N like(r5_object_t);
       width int(10) const;
@@ -248,7 +257,7 @@ dcl-proc R5_INVALID_MAX_WIDTH_EXCEPTION;
 end-proc;
 
 
-dcl-proc R5_EXPECTED_CALLBACK_EXCEPTION;
+dcl-proc EXPECTED_CALLBACK_EXCEPTION;
 
    dcl-pi *N like(r5_object_t);
       call_level likeds(r5_call_level_info_t) const;

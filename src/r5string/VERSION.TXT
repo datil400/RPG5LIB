@@ -1,2 +1,5 @@
-1.1_rc1
-20240830
+1.1_rc2
+20240916
+
+Cambio a grupo de activación 'RPG5LIB'
+Control de errores en todos los "límites de control' del grupo de activación

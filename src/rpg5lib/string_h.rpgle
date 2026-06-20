@@ -74,7 +74,7 @@ dcl-pr r5_buffer_to_varlen like(r5_var_buffer_t) extproc(*DCLCASE);
 end-pr;
 
 dcl-pr r5_varlen_to_buffer extproc(*DCLCASE);
-  varlen like(r5_var_buffer_t) options(*VARSIZE) const;
+  varbuf like(r5_var_buffer_t) options(*VARSIZE) const;
   buffer like(r5_buffer_t) Options(*VARSIZE);
   size like(r5_int_t) const;
 end-pr;

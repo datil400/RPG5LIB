@@ -6,7 +6,7 @@
 //
 //  String procedures and functions.
 //
-//  Author : Javier Mora
+//  Author : datil400@gmail.com
 //  Date   : March 2014
 //
 //  Compiling : R5STRINGI
@@ -23,6 +23,7 @@ ctl-opt bnddir('RPG5LIB');
 /COPY API,MIH_H
 
 /COPY RPG5LIB,apierror_h
+/COPY RPG5LIB,excmgr_h
 /COPY RPG5LIB,math_h
 /COPY RPG5LIB,string_h
 
@@ -62,7 +63,7 @@ dcl-proc r5_left_pad export;
    if length < %len(str);
       result = %subst(str: 1: length);
    else;
-      result = r5_repeat(pad: length/%len(pad) + 1);  // Usar r5_ceil() en math
+      result = r5_repeat(pad: length/%len(pad) + 1);
       result = r5_left(result: length - %len(str)) + str;
    endif;
    return result;
@@ -101,7 +102,7 @@ dcl-proc r5_right_pad export;
    if length < %len(str);
       result = %subst(str: 1: length);
    else;
-      result = r5_repeat(pad: length/%len(pad) + 1);  // Usar r5_ceil() en math
+      result = r5_repeat(pad: length/%len(pad) + 1);
       result = str + r5_right(r5_left(result: length): length - %len(str));
    endif;
    return result;
@@ -208,7 +209,7 @@ end-proc;
 //  Esta función es muy similar a %substr().
 //
 //  Si 'start' es mayor que la longitud de la cadena, devuelve una subcadena
-//  vacía.
+//  vacía. Si es cero o negativo, se comienza desde el principio.
 //
 //  Si 'o_length' se omite o es cero, se devuelve una subcadena que
 //  comienza en 'start' hasta el final de la cadena.
@@ -222,6 +223,7 @@ dcl-proc r5_mid export;
    end-pi;
 
    dcl-s length like(o_length);
+   dcl-s origin like(start);
 
 
    if %parms() >= %parmnum(o_length);
@@ -230,22 +232,28 @@ dcl-proc r5_mid export;
       length = %len(string);
    endif;
 
+   if start <= 0;
+      origin = 1;
+   else;
+      origin = start;
+   endif;
+
    // Ajustar la longitud de la subcadena a extraer por si supera
    // la longitud de la cadena base. La BIF '%substr()' genera
    // un error en ese caso.
 
-   if length > %len(string) - start + 1;
-     length = %len(string) - start + 1;
+   if length > %len(string) - origin + 1;
+     length = %len(string) - origin + 1;
    endif;
 
    // No hay nada que extraer
 
-   if  length <= 0 or %len(string) = 0 or start > %len(string);
+   if  length <= 0 or %len(string) = 0 or origin > %len(string);
       return '';
    endif;
 
    return %subst( string
-                : %int(r5_min(start: %len(string)))
+                : %int(r5_min(origin: %len(string)))
                 : length
                 );
 end-proc;
@@ -307,16 +315,20 @@ dcl-proc r5_convert_case export;
 
    min_length = r5_min(in_str_size: out_str_size);
 
-   r5_api_error_init_for_exception(error);
-   QlgConvertCase( rcb
-                 : %subst(in_string: 1: min_length)
-                 : out_string
-                 : min_length
-                 : error
-                 );
-   if out_str_size > min_length;
-      %subst(out_string: min_length + 1: out_str_size - min_length) = *BLANKS;
-   endif;
+   monitor;
+      r5_api_error_init_for_exception(error);
+      QlgConvertCase( rcb
+                    : %subst(in_string: 1: min_length)
+                    : out_string
+                    : min_length
+                    : error
+                    );
+      if out_str_size > min_length;
+         %subst(out_string: min_length + 1: out_str_size - min_length) = *BLANKS;
+      endif;
+   on-error;
+      r5_resend_exception();
+   endmon;
    return;
 end-proc;
 
@@ -342,14 +354,18 @@ dcl-proc r5_to_upper export;
       ccsid = JOB_CCSID;
    endif;
 
-   out_str_len_ptr = %addr(out_str);        // Two bytes for string length
-   buffer_ptr = out_str_len_ptr + %size(out_str_len); // The data
-   out_str_len = %len(string);
-   r5_convert_case( string: %len(string)
-                  : buffer: %len(string)
-                  : R5_STR_TO_UPPER
-                  : ccsid
-                  );
+   monitor;
+      out_str_len_ptr = %addr(out_str);        // Two bytes for string length
+      buffer_ptr = out_str_len_ptr + %size(out_str_len); // The data
+      out_str_len = %len(string);
+      r5_convert_case( string: %len(string)
+                     : buffer: %len(string)
+                     : R5_STR_TO_UPPER
+                     : ccsid
+                     );
+   on-error;
+      r5_resend_exception();
+   endmon;
    return out_str;
 end-proc;
 
@@ -375,14 +391,18 @@ dcl-proc r5_to_lower export;
       ccsid = JOB_CCSID;
    endif;
 
-   out_str_len_ptr = %addr(out_str);        // Two bytes for string length
-   buffer_ptr = out_str_len_ptr + %size(out_str_len); // The data
-   out_str_len = %len(string);
-   r5_convert_case( string: %len(string)
-                  : buffer: %len(string)
-                  : R5_STR_TO_LOWER
-                  : ccsid
-                  );
+   monitor;
+      out_str_len_ptr = %addr(out_str);        // Two bytes for string length
+      buffer_ptr = out_str_len_ptr + %size(out_str_len); // The data
+      out_str_len = %len(string);
+      r5_convert_case( string: %len(string)
+                     : buffer: %len(string)
+                     : R5_STR_TO_LOWER
+                     : ccsid
+                     );
+   on-error;
+      r5_resend_exception();
+   endmon;
    return out_str;
 end-proc;
 
@@ -408,14 +428,19 @@ dcl-proc r5_buffer_to_varlen export;
       size like(r5_int_t) const;
    end-pi;
 
-   dcl-s varlen like(r5_var_buffer_t) inz('');
+   dcl-s result like(r5_var_buffer_t) inz('');
+
 
    if size <= 0;
       return  '';
    endif;
 
-   varlen = %subst(buffer: 1: size);
-   return varlen;
+   monitor;
+      result = %subst(buffer: 1: size);
+   on-error;
+      r5_resend_exception();
+   endmon;
+   return result;
 end-proc;
 
 
@@ -437,16 +462,21 @@ end-proc;
 dcl-proc r5_varlen_to_buffer export;
 
    dcl-pi *N;
-     varlen like(r5_var_buffer_t) options(*VARSIZE) const;
+     varbuf like(r5_var_buffer_t) options(*VARSIZE) const;
      buffer like(r5_buffer_t) options(*VARSIZE);
      size like(r5_int_t) const;
    end-pi;
 
-   if size <= 0 or %len(varlen) <= 0;
+
+   if size <= 0 or %len(varbuf) <= 0;
       return;
    endif;
 
-   %subst(buffer: 1: size) = varlen;
+   monitor;
+      %subst(buffer: 1: size) = varbuf;
+   on-error;
+      r5_resend_exception();
+   endmon;
    return;
 end-proc;
 
@@ -504,12 +534,16 @@ dcl-proc r5_char_to_dec export;
    attr.decPos = %decpos(result);
    attr.totDig = %len(result);
 
-   CVTEFN( %addr(result)
-         : attr
-         : %addr(string) + BYTES_FOR_LENGTH
-         : %len(string)
-         : mask
-         );
+   monitor;
+      CVTEFN( %addr(result)
+            : attr
+            : %addr(string) + BYTES_FOR_LENGTH
+            : %len(string)
+            : mask
+            );
+   on-error;
+      r5_resend_exception();
+   endmon;
    return result;
 end-proc;
 
@@ -520,7 +554,7 @@ dcl-proc r5_spaces export;
       length like(r5_int_t) const;
    end-pi;
 
-   dcl-s result varchar(16382);
+   dcl-s result varchar(r5_var_buffer64_t);
    dcl-s s like(length);
 
    result = '';
@@ -587,13 +621,74 @@ dcl-proc r5_clean_text_extended export;
    dcl-s pos like(r5_int_t);
    dcl-s char like(r5_char_t);
 
-    for pos = 1 to %len(text);
-       char = %subst(text: pos: 1);
-       if filter_event(char);
-          result += char;
-       endif;
-    endfor;
-    return result;
+   monitor;
+      for pos = 1 to %len(text);
+         char = %subst(text: pos: 1);
+         if filter_event(char);
+            result += char;
+         endif;
+      endfor;
+   on-error;
+      r5_resend_exception();
+   endmon;
+   return result;
+end-proc;
+
+/EOF
+
+// LIMPIAR CÓDIGO: nombres de variables y parámetros, significado parámetros,
+//   comparar con 'clean_text'
+
+//
+//  clean_number:
+//
+//  Limpiar una cadena de caracteres numérica de símbolos extraños.
+//
+//  Parámetro      Uso  Descripción
+//
+//     *  number          E   Valor numérico a limpiar con formato
+//     *                      alfanumérico.
+//     *  newFilters      E   Filtros alternativos: sustituyen a los
+//     *                      símbolos por defecto.
+//     *                      Corresponden a los símbolos válidos
+//     *                      admitidos en la cadena 'number'.
+//     *                      Optativo.
+//     *
+//     *  Valor retorno: La cadena numérica sin símbolos extraños.
+//     */
+
+dcl-proc r5_clean_number export;
+
+   dcl-pi *N varchar(128);
+      number varchar(128) const;
+      newFilters varchar(128) options(*NOPASS) const;
+   end-pi;
+
+   dcl-c DIGITS '0123456789';
+   // ¡Ojo! La coma decimal en el mundo anglosajón es un punto (.)
+   dcl-c SYMBOLS  '-,';
+   dcl-c BLANK  ' ';
+
+   dcl-s clean like(number);
+   dcl-s filters like(newFilters);
+   dcl-s pos int(10);
+
+   // Sustituir los símbolos por defecto a filtrar
+
+   if %parms() >= %parmNum(newFilters);
+       filters = DIGITS + newFilters;
+   else;
+       filters = DIGITS + SYMBOLS + BLANK;
+   endif;
+
+   clean = number;
+   dou pos = 0;
+      pos = %check(filters : clean);
+      if pos > 0;
+         clean = %replace('': clean: pos: 1);
+      endif;
+   enddo;
+   return clean;
 end-proc;
 
 
