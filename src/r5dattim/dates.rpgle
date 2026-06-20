@@ -574,7 +574,6 @@
              format = long_format;
           endif;
        else;
-          //if %len(long_format) <= %size(r5_date_format_t);
           if %len(long_format) <= %len(format: *MAX);
              format = r5_clean_text(long_format: VALID_DATE_SEPARATORS);
           else;
@@ -757,9 +756,7 @@
      *  Analiza el formato de fecha para identificar si incluye separadores
      *  y obtiene un formato CEE equivalente.
      *
-     *  ¿Buscar un nombre más apropiado?
-     *
-     *  Factorizar
+     *  Nota: Factorizar el código
      */
 
      P parse_date_format...
@@ -1043,7 +1040,7 @@
 
        // Averigua si el formato de fecha incluye el separador y si
        // éste es válido.
-       // Se toma el primero encontrado y todos los demás deben ser
+       // Se toma el primero encontrado y todos los demás deberían ser
        // iguales.
 
        sep_pos = %check('DMY': cee_format);

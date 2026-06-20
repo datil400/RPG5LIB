@@ -308,7 +308,7 @@
 
      P convert_char_time...
      P                 B
-     D                 PI                  like(r5_long_char_date_t)
+     D                 PI                  like(r5_long_char_timestamp_t)
      D   char_ts                           like(r5_long_char_timestamp_t) const
      D                                     options(*TRIM)
      D   char_format                       like(r5_timestamp_format_t) const
